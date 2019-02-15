@@ -21,78 +21,35 @@ def main():
     count = 0
     board = np.zeros((12, 8))
     id_board = np.zeros((12, 8))
-    test_dict = {}
     pattern = [re.compile('^0\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$'),
                re.compile('^([A-H])\\s([1-9]|1[0-2])\\s([A-H])\\s([1-9]|1[0-2])\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$')]
 
     while 1:
-        if phase == Phase.NORMAL and count == 24:
-            print('Recycling phase starts')
-            phase = Phase.RECYCLE
-            break
-        elif count == 60:
+        if count == 60:
             print('Game ends in a draw')
             break
+        if count == 24:
+            print('Recycling phase starts')
+            phase = Phase.RECYCLE
 
         param = None
-        while not param:
+        is_valid_play = False
+        while (not param) and is_valid_play:
             print('Player' + str(((count % 2) + 1)) + ' [' + phase.name + ']: ')
             user_input = input()
             param = pattern[phase.value-1].match(user_input)
             if not param:
-                print("Invalid input, please try again")
+                print('Invalid input, please try again')
 
-        idk = param[0]
-        type = int(param[1])
-        px = ord(param[2]) - 65
-        py = int(param[3]) - 1
+            if param.group(1) == 0:
+                is_valid_play = play_normal(param, board, id_board)
+            else:
+                is_valid_play = play_recycle(param, board, id_board)
 
-        type1, type2, px2, py2 = TypeConvert(py, px, type)
-
-        # if validate then count++
-        count += 1
-
-        # print(type)
-        # print(px)
-        # print(py)
-
-        p1 = Card.Card(type1, px, py, count)
-        p2 = Card.Card(type2, px2, py2, count)
-
-        test_dict[p1] = count
-        test_dict[p2] = count
-        CardList = test_dict.keys()
-        print(list(CardList)[1].x)
-        print(list(CardList)[1].y)
-        print(list(CardList)[1].attribute)
-
-        board[py][px] = type1
-        board[py2][px2] = type2
-
-        id_board[py][px] = count
-        id_board[py2][px2] = count
-        print(id_board)
-        print()
-
-        if (bfs(py2, px2, py2 + 1, px2, type, 1, 2, board, 0) or
-                bfs(py2, px2, py2 - 1, px2, type, 1, 2, board, 0) or
-                bfs(py2, px2, py2, px2 + 1, type, 3, 4, board, 0) or
-                bfs(py2, px2, py2, px2 - 1, type, 3, 4, board, 0) or
-                bfs(py2, px2, py2 + 1, px2 + 1, type, 5, 7, board, 0) or
-                bfs(py2, px2, py2 - 1, px2 + 1, type, 6, 8, board, 0) or
-                bfs(py2, px2, py2 - 1, px2 - 1, type, 5, 7, board, 0) or
-                bfs(py2, px2, py2 + 1, px2 - 1, type, 6, 8, board, 0) or
-                bfs(py, px, py + 1, px, type, 1, 2, board, 0) or
-                bfs(py, px, py - 1, px, type, 1, 2, board, 0) or
-                bfs(py, px, py, px + 1, type, 3, 4, board, 0) or
-                bfs(py, px, py, px - 1, type, 3, 4, board, 0) or
-                bfs(py, px, py + 1, px + 1, type, 5, 7, board, 0) or
-                bfs(py, px, py - 1, px + 1, type, 6, 8, board, 0) or
-                bfs(py, px, py - 1, px - 1, type, 5, 7, board, 0) or
-                bfs(py, px, py + 1, px - 1, type, 6, 8, board, 0)):
-            break
-
-        print(board)
+            if is_valid_play:
+                ++count
+            else:
+                print('Invalid move, please try again')
 
 
 # according the type to calculate the two half type and position
@@ -198,3 +155,15 @@ def dfs(py, px, type, direction, map, result):
 
 if __name__ == '__main__':
     main()
+
+
+def play_normal(param, board, id_board):
+    card_type=
+
+
+    return True
+
+
+def play_recycle(param, board, id_board):
+
+    return True
