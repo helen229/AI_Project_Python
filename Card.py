@@ -1,9 +1,9 @@
 class Card:
-  def __init__(self, attribute,x,y,id):
-    self.attribute = attribute;
-    self.x = x;
-    self.y = y;
-    self.id = id;
+    def __init__(self, attribute, x, y, id):
+        self.attribute = attribute
+        self.x = x
+        self.y = y
+        self.id = id
 
 # p1 = Card("W", "A","1",1)
 #
