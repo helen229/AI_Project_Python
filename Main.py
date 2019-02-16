@@ -69,7 +69,7 @@ def main():
             if param.group(1) == '0':
                 is_valid_play, win_list = play_normal(param, card_board, seg_board, player)
             # else:
-            #    is_valid_play, is_win, win_mode = play_recycle(param, card_board, seg_board, player)
+            #    is_valid_play, win_list = play_recycle(param, card_board, seg_board, player)
 
             if not is_valid_play:
                 print('Invalid positions, please try again')
@@ -98,9 +98,9 @@ def play_normal(param, card_board, seg_board, player):
 
     card = Card(px, py, card_type, player)
     if not card.is_valid():
-        return False, False, None
+        return False, None
     if not valid_position(card, seg_board):
-        return False, False, None
+        return False, None
 
     # seg_board has already been assigned to segments in valid_position()
     for seg in card.seg:
@@ -111,8 +111,9 @@ def play_normal(param, card_board, seg_board, player):
     return True, win_list
 
 
-def play_recycle(param, id_board, card_list):
-    return True
+def play_recycle(param, card_board, seg_board, player):
+
+      return True, None
 
 
 def valid_position(card, seg_board):
