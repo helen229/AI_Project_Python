@@ -48,7 +48,6 @@ def main():
 
     phase = Phase.NORMAL
     step = 1
-    card_board = np.zeros((12, 8), dtype=Card)
     seg_board = np.zeros((12, 8), dtype=CardSegment)
     pattern = [re.compile('^(0)\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$'),
                re.compile('^([A-H])\\s([1-9]|1[0-2])\\s([A-H])\\s([1-9]|1[0-2])\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$')]
@@ -67,9 +66,9 @@ def main():
                 print('Invalid input, please try again')
                 continue
             if param.group(1) == '0':
-                is_valid_play, win_list = play_normal(param, card_board, seg_board, player)
-            # else:
-            #    is_valid_play, win_list = play_recycle(param, card_board, seg_board, player)
+                is_valid_play, prev_card, win_list = play_normal(param[2], param[3], param[4], seg_board, player)
+            else:
+                is_valid_play, prev_card, win_list = play_recycle(param, seg_board, player, prev_card)
 
             if not is_valid_play:
                 print('Invalid positions, please try again')
@@ -91,29 +90,59 @@ def main():
         step += 1
 
 
-def play_normal(param, card_board, seg_board, player):
-    card_type = int(param[2])
-    px = param[3]
-    py = int(param[4])
-
+def play_normal(card_type, px, py, seg_board, player):
     card = Card(px, py, card_type, player)
     if not card.is_valid():
-        return False, None
+        return False, None, None
     if not valid_position(card, seg_board):
-        return False, None
+        return False, None, None
 
-    # seg_board has already been assigned to segments in valid_position()
-    for seg in card.seg:
-        card_board[seg.y][seg.x] = card
+    win_list = validate_win(card, seg_board)
 
-    win_list = validate_win(card, card_board, seg_board)
-
-    return True, win_list
+    return True, card, win_list
 
 
-def play_recycle(param, card_board, seg_board, player):
+def play_recycle(param, seg_board, player, prev_card):
+    px1 = ord(param[1]) - 65
+    py1 = int(param[2]) - 1
+    px2 = ord(param[3]) - 65
+    py2 = int(param[4]) - 1
 
-      return True, None
+    new_card_type = param[5]
+    new_px = param[6]
+    new_py = param[7]
+
+    selected_seg1 = seg_board[py1][px1]
+    selected_seg2 = seg_board[py2][px2]
+
+    # if new position same as previous one, and the rotation is the same
+    if param[1] == param[6] and param[2] == param[7] and selected_seg1.parent.card_type == int(new_card_type):
+        return False, None, None
+
+    # check existence, check if the same card, check if the previous card
+    if isinstance(selected_seg1, CardSegment) and isinstance(selected_seg2, CardSegment) and \
+            selected_seg1.parent == selected_seg2.parent and selected_seg1.parent != prev_card:
+        # if remove legal
+        if is_remove_legal(selected_seg1, seg_board) and is_remove_legal(selected_seg2, seg_board):
+            # temporarily delete the card
+            seg_board[py1][px1] = 0
+            seg_board[py2][px2] = 0
+            # delegate to play_normal
+            is_valid_play, prev_card, win_list = play_normal(new_card_type, new_px, new_py, seg_board, player)
+            # restore if it's not a valid new card
+            if not is_valid_play:
+                seg_board[py1][px1] = selected_seg1
+                seg_board[py2][px2] = selected_seg2
+            return is_valid_play, prev_card, win_list
+    return False, None, None
+
+
+def is_remove_legal(segment, seg_board):
+    seg_above = seg_board[segment.y + 1][segment.x]
+    if isinstance(seg_above, CardSegment):
+        return False
+    else:
+        return True
 
 
 def valid_position(card, seg_board):
@@ -135,43 +164,43 @@ def valid_position(card, seg_board):
     return True
 
 
-def validate_win(card, card_board, seg_board):
+def validate_win(card, seg_board):
     win_list = []
 
     for seg in card.seg:
         for mode in Choice:
             # up
-            count1 = validate_win_helper(seg, 0, 1, card_board, seg_board, mode)
+            count1 = validate_win_helper(seg, 0, 1, seg_board, mode)
             # bottom
-            count2 = validate_win_helper(seg, 0, -1, card_board, seg_board, mode)
+            count2 = validate_win_helper(seg, 0, -1, seg_board, mode)
             if count1 + count2 >= 3:
                 win_list.append([seg, mode])
 
             # up right
-            count1 = validate_win_helper(seg, 1, 1, card_board, seg_board, mode)
+            count1 = validate_win_helper(seg, 1, 1, seg_board, mode)
             # bottom left
-            count2 = validate_win_helper(seg, -1, -1, card_board, seg_board, mode)
+            count2 = validate_win_helper(seg, -1, -1, seg_board, mode)
             if count1 + count2 >= 3:
                 win_list.append([seg, mode])
 
             # right
-            count1 = validate_win_helper(seg, 1, 0, card_board, seg_board, mode)
+            count1 = validate_win_helper(seg, 1, 0, seg_board, mode)
             # left
-            count2 = validate_win_helper(seg, -1, 0, card_board, seg_board, mode)
+            count2 = validate_win_helper(seg, -1, 0, seg_board, mode)
             if count1 + count2 >= 3:
                 win_list.append([seg, mode])
 
             # bottom right
-            count1 = validate_win_helper(seg, 1, -1, card_board, seg_board, mode)
+            count1 = validate_win_helper(seg, 1, -1, seg_board, mode)
             # top left
-            count2 = validate_win_helper(seg, -1, 1, card_board, seg_board, mode)
+            count2 = validate_win_helper(seg, -1, 1, seg_board, mode)
             if count1 + count2 >= 3:
                 win_list.append([seg, mode])
 
     return win_list
 
 
-def validate_win_helper(seg, increment_x, increment_y, card_board, seg_board, mode):
+def validate_win_helper(seg, increment_x, increment_y, seg_board, mode):
     x = seg.x
     y = seg.y
     next_x = x + increment_x
@@ -183,7 +212,7 @@ def validate_win_helper(seg, increment_x, increment_y, card_board, seg_board, mo
             return 0
         if (mode == Choice.COLOR and next_seg.color == seg.color) or (
                 mode == Choice.DOT and next_seg.dot == seg.dot):
-            count = validate_win_helper(next_seg, increment_x, increment_y, card_board, seg_board, mode) + 1
+            count = validate_win_helper(next_seg, increment_x, increment_y, seg_board, mode) + 1
         else:
             return 0
     else:

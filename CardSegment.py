@@ -16,7 +16,7 @@ class CardSegment:
     def __init__(self, color, dot, parent, x, y, owner):
         self.color = color
         self.dot = dot
-        self.parent_id = parent
+        self.parent = parent
         self.x = x
         self.y = y
         self.owner = owner
@@ -29,7 +29,7 @@ class CardSegment:
         return self.color == other.color and self.dot == other.dot and self.x == other.x and self.y == other.y
 
     def __repr__(self):
-        return '({!r}, {!r}, {!r}, {!r}, {!r})'.format(self.color, self.dot, self.x, self.y, self.owner)
+        return '(ID:{!r},{!r},{!r},{!r},{!r},{!r})'.format(self.parent.card_id, self.color, self.dot, self.x, self.y, self.owner)
 
 # p1 = Card("W", "A","1",1)
 #
