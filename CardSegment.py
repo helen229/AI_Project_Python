@@ -13,24 +13,23 @@ class Dot(Enum):
 
 class CardSegment:
 
-    def __init__(self, color, dot, parent_id, px, py):
+    def __init__(self, color, dot, parent, x, y, owner):
         self.color = color
         self.dot = dot
-        self.parent_id = parent_id
-        self.px = px
-        self.py = py
+        self.parent_id = parent
+        self.x = x
+        self.y = y
+        self.owner = owner
 
-    def set_position(self, px, py):
-        self.px = px
-        self.py = py
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
 
     def __eq__(self, other):
-        return self.color == other.color and self.dot == other.dot and self.px == other.px and self.py == other.py
+        return self.color == other.color and self.dot == other.dot and self.x == other.x and self.y == other.y
 
     def __repr__(self):
-        return '{}({!r}, {!r}, {!r}, {!r})'.format(
-            self.__class__.__name__,
-            self.color, self.dot, self.px, self.py)
+        return '({!r}, {!r}, {!r}, {!r}, {!r})'.format(self.color, self.dot, self.x, self.y, self.owner)
 
 # p1 = Card("W", "A","1",1)
 #

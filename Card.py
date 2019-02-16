@@ -6,13 +6,16 @@ from CardSegment import Dot
 class Card:
     max_x = 8
     max_y = 12
+    card_id = 0
 
-    def __init__(self, card_id, px, py, card_type):
+    def __init__(self, px, py, card_type, owner):
 
         self.card_type = card_type
+        self.owner = owner
         # adjust indexes
-        px = ord(px) - 65
-        py -= 1
+        x = ord(px) - 65
+        y = py - 1
+
         # set attributes for two sides
         if card_type <= 4:
             # side 1, red bg and solid dot
@@ -26,27 +29,32 @@ class Card:
             anchor_dot = Dot.EMPTY
             rotating_color = Color.WHITE
             rotating_dot = Dot.SOLID
-
+        self.seg = [None, None]
         tmp_card_type = card_type % 4
         if tmp_card_type == 1:
-            self.seg1 = CardSegment(anchor_color, anchor_dot, card_id, px, py)
-            self.seg2 = CardSegment(rotating_color, rotating_dot, card_id, px + 1, py)
+            self.seg[0] = CardSegment(anchor_color, anchor_dot, self.card_id, x, y, owner)
+            self.seg[1] = CardSegment(rotating_color, rotating_dot, self.card_id, x + 1, y, owner)
         elif tmp_card_type == 2:
-            self.seg1 = CardSegment(anchor_color, anchor_dot, card_id, px, py)
-            self.seg2 = CardSegment(rotating_color, rotating_dot, card_id, px, py - 1)
+            self.seg[0] = CardSegment(rotating_color, rotating_dot, self.card_id, x, y, owner)
+            self.seg[1] = CardSegment(anchor_color, anchor_dot, self.card_id, x, y + 1, owner)
         elif tmp_card_type == 3:
-            self.seg1 = CardSegment(rotating_color, rotating_dot, card_id, px, py)
-            self.seg2 = CardSegment(anchor_color, anchor_dot, card_id, px + 1, py)
+            self.seg[0] = CardSegment(rotating_color, rotating_dot, self.card_id, x, y, owner)
+            self.seg[1] = CardSegment(anchor_color, anchor_dot, self.card_id, x + 1, y, owner)
         else:
-            self.seg1 = CardSegment(rotating_color, rotating_dot, card_id, px, py)
-            self.seg2 = CardSegment(anchor_color, anchor_dot, card_id, px, py - 1)
+            self.seg[0] = CardSegment(anchor_color, anchor_dot, self.card_id, x, y, owner)
+            self.seg[1] = CardSegment(rotating_color, rotating_dot, self.card_id, x, y + 1, owner)
+
+        self.card_id += 1
 
     def __eq__(self, other):
-        return self.seg1 == other.seg1 and self.seg2 == other.seg2
+        return self.seg[0] == other.seg[0] and self.seg[1] == other.seg[1]
+
+    def __repr__(self):
+        return '(ID:{!r}, T:{!r}, O:{!r})'.format(self.card_id, self.card_type, self.owner)
 
     def is_valid(self):
         # validate if the rotating segment is out of board
-        if 0 <= self.seg2.px < self.max_x and 0 <= self.seg2.py < self.max_y:
+        if 0 <= self.seg[1].x < self.max_x and 0 <= self.seg[1].y < self.max_y:
             return True
         else:
             return False
