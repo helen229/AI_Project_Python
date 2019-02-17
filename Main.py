@@ -12,9 +12,13 @@ from Card import Card
 from CardSegment import CardSegment
 from CardSegment import Color
 from CardSegment import Dot
+from colorama import init
+from colorama import Fore, Back, Style
 
 max_x = 8
 max_y = 12
+
+init(autoreset=True)
 
 
 class Phase(Enum):
@@ -72,6 +76,8 @@ def main():
 
             if not is_valid_play:
                 print('Invalid positions, please try again')
+
+        print_board(seg_board)
 
         if win_list:
             for win in win_list:
@@ -219,6 +225,29 @@ def validate_win_helper(seg, increment_x, increment_y, seg_board, mode):
         return 0
 
     return count
+
+
+def print_board(seg_board):
+    for i in range(11, -1, -1):
+        print('%3s' % str(i+1) + ': ', end='')
+        for j in range(0, 8):
+            seg = seg_board[i][j]
+            fore = Fore.BLACK
+            back = Back.RESET
+            if isinstance(seg, CardSegment):
+                if seg.color == Color.RED:
+                    back = Back.RED
+                else:
+                    back = Back.WHITE
+                if seg.dot == Dot.SOLID:
+                    symbol = '●'
+                else:
+                    symbol = '○'
+                print(fore+back+symbol, end='')
+            else:
+                print(' ', end='')
+        print()
+    print('     ABCDEFGH')
 
 
 if __name__ == '__main__':
