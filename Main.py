@@ -162,7 +162,7 @@ def valid_position(card, seg_board):
         seg_board[seg.y][seg.x] = seg
 
     # check surrounding cells
-    if seg.y != 0 and (not isinstance(seg_board[seg.y - 1][seg.x], CardSegment)):
+    if card.seg[0].y != 0 and (not isinstance(seg_board[card.seg[0].y - 1][card.seg[0].x], CardSegment)):
         for seg in card.seg:
             seg_board[seg.y][seg.x] = 0
         return False
