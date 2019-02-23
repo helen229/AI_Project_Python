@@ -52,6 +52,9 @@ def main():
 
     phase = Phase.NORMAL
     step = 1
+    player = 1
+    prev_card = None
+
     seg_board = np.zeros((12, 8), dtype=CardSegment)
     pattern = [re.compile('^(0)\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$'),
                re.compile('^([A-H])\\s([1-9]|1[0-2])\\s([A-H])\\s([1-9]|1[0-2])\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$')]
@@ -61,7 +64,6 @@ def main():
         param = None
         is_valid_play = False
         is_win = False
-        player = 1
         while (not param) or (not is_valid_play):
             player = ((step - 1) % 2 + 1)
             user_input = input('Player ' + str(player) + ' [' + phase.name + ']: ')
@@ -70,12 +72,12 @@ def main():
                 print('Invalid input, please try again')
                 continue
             if param.group(1) == '0':
-                is_valid_play, prev_card, win_list = play_normal(param[2], param[3], param[4], seg_board, player)
+                is_valid_play, prev_card, win_list = play_normal(param[2], param[3], param[4], seg_board, player, prev_card)
             else:
                 is_valid_play, prev_card, win_list = play_recycle(param, seg_board, player, prev_card)
 
             if not is_valid_play:
-                print('Invalid positions, please try again')
+                print('Invalid operation, please try again')
 
         print_board(seg_board)
 
@@ -96,12 +98,12 @@ def main():
         step += 1
 
 
-def play_normal(card_type, px, py, seg_board, player):
+def play_normal(card_type, px, py, seg_board, player, prev_card):
     card = Card(px, py, card_type, player)
     if not card.is_valid():
-        return False, None, None
+        return False, prev_card, None
     if not valid_position(card, seg_board):
-        return False, None, None
+        return False, prev_card, None
 
     win_list = validate_win(card, seg_board)
 
@@ -123,31 +125,40 @@ def play_recycle(param, seg_board, player, prev_card):
 
     # if new position same as previous one, and the rotation is the same
     if param[1] == param[6] and param[2] == param[7] and selected_seg1.parent.card_type == int(new_card_type):
-        return False, None, None
+        return False, prev_card, None
 
     # check existence, check if the same card, check if the previous card
     if isinstance(selected_seg1, CardSegment) and isinstance(selected_seg2, CardSegment) and \
             selected_seg1.parent == selected_seg2.parent and selected_seg1.parent != prev_card:
         # if remove legal
-        if is_remove_legal(selected_seg1, seg_board) and is_remove_legal(selected_seg2, seg_board):
+        if is_remove_legal(selected_seg1.parent, seg_board):
             # temporarily delete the card
             seg_board[py1][px1] = 0
             seg_board[py2][px2] = 0
             # delegate to play_normal
-            is_valid_play, prev_card, win_list = play_normal(new_card_type, new_px, new_py, seg_board, player)
+            is_valid_play, prev_card, win_list = play_normal(new_card_type, new_px, new_py, seg_board, player, prev_card)
             # restore if it's not a valid new card
             if not is_valid_play:
                 seg_board[py1][px1] = selected_seg1
                 seg_board[py2][px2] = selected_seg2
             return is_valid_play, prev_card, win_list
-    return False, None, None
+    return False, prev_card, None
 
 
-def is_remove_legal(segment, seg_board):
-    seg_above = seg_board[segment.y + 1][segment.x]
-    if isinstance(seg_above, CardSegment):
-        return False
+def is_remove_legal(card, seg_board):
+    if card.card_type%2==1:
+        # horizontal cards
+        if card.seg[0].y < max_y-1:
+            # not the last row
+            for seg in card.seg:
+                if isinstance(seg_board[seg.y+1][seg.x],CardSegment):
+                    return False
+
+        return True
     else:
+        if card.seg[1].y < max_y - 1:
+            if isinstance(seg_board[card.seg[1].y+1][card.seg[1].x],CardSegment):
+                return False
         return True
 
 
