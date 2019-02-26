@@ -12,24 +12,26 @@ from colorama import init
 from colorama import Fore, Back, Style
 
 
+class Phase(Enum):
+    NORMAL = 1
+    RECYCLE = 2
+
+
+class Choice(Enum):
+    COLOR = 1
+    DOT = 2
+
+
 class Game:
     max_x = 8
     max_y = 12
 
     init(autoreset=True)
 
-    class Phase(Enum):
-        NORMAL = 1
-        RECYCLE = 2
-
-    class Choice(Enum):
-        COLOR = 1
-        DOT = 2
-
-    def __int__(self, choice_p1):
+    def __init__(self, choice_p1):
         self.choice_p = [None, self.Choice.COLOR, self.Choice.DOT]
         # player 1 is always human player
-        self.choice_p[1]=choice_p1
+        self.choice_p[1] = choice_p1
         if self.choice_p[1] == self.Choice.COLOR:
             self.choice_p[2] = self.Choice.DOT
         else:
@@ -49,17 +51,17 @@ class Game:
         is_valid_play, win_list = self.play_normal(card_type, x, y)
 
         if is_valid_play:
-            self.step+=1
+            self.step += 1
             if win_list:
-                player=((self.step - 2) % 2 + 1)
+                player = ((self.step - 2) % 2 + 1)
                 for win in win_list:
                     if self.choice_p[player] == win[1]:
                         win = player
-                win=3-player
-                return True, self.prev_card, self.step-1, win
+                win = 3 - player
+                return True, self.prev_card, self.step - 1, win
                 exit()
             else:
-                return True, self.prev_card, self.step-1, 0
+                return True, self.prev_card, self.step - 1, 0
         else:
             return False, None, self.step, 0
 
@@ -67,14 +69,14 @@ class Game:
         is_valid_play, win_list = self.play_recycle(old_x1, old_y1, old_x2, old_y2, new_card_type, new_x, new_y)
 
         if is_valid_play:
-            self.step+=1
+            self.step += 1
             if win_list:
-                player=((self.step - 2) % 2 + 1)
+                player = ((self.step - 2) % 2 + 1)
                 for win in win_list:
                     if self.choice_p[player] == win[1]:
                         win = player
-                win=3-player
-                return True, self.get_card(old_x1, old_y1), self.prev_card, self.step-1, win
+                win = 3 - player
+                return True, self.get_card(old_x1, old_y1), self.prev_card, self.step - 1, win
                 exit()
             else:
                 return True, self.get_card(old_x1, old_y1), self.prev_card, self.step - 1, 0
@@ -87,12 +89,12 @@ class Game:
     def play_normal(self, card_type, x, y):
         card = Card(x, y, card_type)
         if not card.is_valid():
-            return False, self.prev_card, None
+            return False, None
         if not self.valid_position(card):
-            return False, self.prev_card, None
+            return False, None
 
         win_list = self.validate_win(card)
-        self.prev_card=card
+        self.prev_card = card
         return True, win_list
 
     def play_recycle(self, old_x1, old_y1, old_x2, old_y2, new_card_type, new_x, new_y):
@@ -105,7 +107,7 @@ class Game:
                 selected_seg1.parent == selected_seg2.parent and selected_seg1.parent != self.prev_card:
 
             # if new position same as previous one, and the rotation is the same
-            if selected_seg1.parent.seg[0].x==new_x and selected_seg1.parent.seg[0].y==new_y and \
+            if selected_seg1.parent.seg[0].x == new_x and selected_seg1.parent.seg[0].y == new_y and \
                     selected_seg1.parent.card_type == new_card_type:
                 return False, None
 
@@ -234,5 +236,33 @@ class Game:
             print()
         print('     ABCDEFGH')
 
-    # if __name__ == '__main__':
-    #     main()
+
+def main():
+    game = Game(Game.Choice.COLOR)
+
+    print(game.place_card(1, 0, 0))
+    game.print_board()
+
+    print(game.place_card(1,0,1))
+    game.print_board()
+
+    print(game.place_card(2,2,0))
+    game.print_board()
+
+    # invalid placement
+    print(game.place_card(1,3,2))
+    game.print_board()
+
+    # invalid placement
+    print(game.place_card(1,0,0))
+    game.print_board()
+
+    print(game.place_card(1,0,2))
+    game.print_board()
+
+    print(game.place_card(1,0,3))
+    game.print_board()
+
+
+if __name__ == '__main__':
+    main()
