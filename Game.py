@@ -53,7 +53,7 @@ class Game:
         if is_valid_play:
             self.step += 1
             if win_list:
-                player = ((self.step - 0) % 2 + 1)
+                player = self.get_player()
                 win_player = -1
                 for win in win_list:
                     if self.choice_p[player] == win[1]:
@@ -61,7 +61,6 @@ class Game:
                 if win_player == -1:
                     win_player = 3 - player
                 return True, self.prev_card, self.step - 1, win_player
-                exit()
             else:
                 return True, self.prev_card, self.step - 1, 0
         else:
@@ -73,7 +72,7 @@ class Game:
         if is_valid_play:
             self.step += 1
             if win_list:
-                player = ((self.step - 0) % 2 + 1)
+                player = self.get_player()
                 win_player = -1
                 for win in win_list:
                     if self.choice_p[player] == win[1]:
@@ -81,11 +80,13 @@ class Game:
                 if win_player == -1:
                     win_player = 3 - player
                 return True, self.get_card(old_x1, old_y1), self.prev_card, self.step - 1, win_player
-                exit()
             else:
                 return True, self.get_card(old_x1, old_y1), self.prev_card, self.step - 1, 0
         else:
             return False, None, None, self.step, 0
+
+    def get_player(self):
+        return (self.step - 2) % 2 + 1
 
     def get_card(self, x, y):
         return self.board[y][x].parent
@@ -244,34 +245,34 @@ class Game:
 def main():
     game = Game(Choice.COLOR)
 
-    print("Player " + str((game.step - 1) % 2 + 1))
     print(game.place_card(1, 0, 0))
+    print("Player " + str(game.get_player()))
     game.print_board()
 
-    print("Player " + str((game.step - 1) % 2 + 1))
     print(game.place_card(1, 0, 1))
+    print("Player " + str(game.get_player()))
     game.print_board()
 
-    print("Player " + str((game.step - 1) % 2 + 1))
     print(game.place_card(2, 2, 0))
+    print("Player " + str(game.get_player()))
     game.print_board()
 
-    print("Player " + str((game.step - 1) % 2 + 1))
     # invalid placement
     print(game.place_card(1, 3, 2))
+    print("Player " + str(game.get_player()))
     game.print_board()
 
-    print("Player " + str((game.step - 1) % 2 + 1))
     # invalid placement
     print(game.place_card(1, 0, 0))
+    print("Player " + str(game.get_player()))
     game.print_board()
 
-    print("Player " + str((game.step - 1) % 2 + 1))
     print(game.place_card(1, 0, 2))
+    print("Player " + str(game.get_player()))
     game.print_board()
 
-    print("Player " + str((game.step - 1) % 2 + 1))
     print(game.place_card(7, 0, 3))
+    print("Player " + str(game.get_player()))
     game.print_board()
 
 
