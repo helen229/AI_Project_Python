@@ -29,13 +29,13 @@ class Game:
     init(autoreset=True)
 
     def __init__(self, choice_p1):
-        self.choice_p = [None, self.Choice.COLOR, self.Choice.DOT]
+        self.choice_p = [None, Choice.COLOR, Choice.DOT]
         # player 1 is always human player
         self.choice_p[1] = choice_p1
-        if self.choice_p[1] == self.Choice.COLOR:
-            self.choice_p[2] = self.Choice.DOT
+        if self.choice_p[1] == Choice.COLOR:
+            self.choice_p[2] = Choice.DOT
         else:
-            self.choice_p[2] = self.Choice.COLOR
+            self.choice_p[2] = Choice.COLOR
 
         # self.phase = self.Phase.NORMAL
         self.step = 1
@@ -163,7 +163,7 @@ class Game:
         win_list = []
 
         for seg in card.seg:
-            for mode in self.Choice:
+            for mode in Choice:
                 # up
                 count1 = self.validate_win_helper(seg, 0, 1, mode)
                 # bottom
@@ -204,8 +204,8 @@ class Game:
             next_seg = self.board[next_y][next_x]
             if not isinstance(next_seg, CardSegment):
                 return 0
-            if (mode == self.Choice.COLOR and next_seg.color == seg.color) or (
-                    mode == self.Choice.DOT and next_seg.dot == seg.dot):
+            if (mode == Choice.COLOR and next_seg.color == seg.color) or (
+                    mode == Choice.DOT and next_seg.dot == seg.dot):
                 count = self.validate_win_helper(next_seg, increment_x, increment_y, mode) + 1
             else:
                 return 0
@@ -238,7 +238,7 @@ class Game:
 
 
 def main():
-    game = Game(Game.Choice.COLOR)
+    game = Game(Choice.COLOR)
 
     print(game.place_card(1, 0, 0))
     game.print_board()
