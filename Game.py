@@ -3,6 +3,8 @@ Game class
 """
 
 import numpy as np
+import copy
+import time
 from enum import Enum
 from Card import Card
 from CardSegment import CardSegment
@@ -40,7 +42,7 @@ class Game:
         # self.phase = self.Phase.NORMAL
         self.step = 1
         self.prev_card = None
-        self.board = np.zeros((12, 8), dtype=CardSegment)
+        self.board = np.zeros((12, 8), dtype=np.object)
 
         print('Player 1 chose to play ' + self.choice_p[1].name)
         print('Player 2 will play ' + self.choice_p[2].name)
@@ -67,6 +69,8 @@ class Game:
             return False, None, self.step, 0
 
     def recycle_card(self, old_x1, old_y1, old_x2, old_y2, new_card_type, new_x, new_y):
+        old_seg = self.board[old_y1][old_x1]
+
         is_valid_play, win_list = self.play_recycle(old_x1, old_y1, old_x2, old_y2, new_card_type, new_x, new_y)
 
         if is_valid_play:
@@ -79,9 +83,9 @@ class Game:
                         win_player = player
                 if win_player == -1:
                     win_player = 3 - player
-                return True, self.get_card(old_x1, old_y1), self.prev_card, self.step - 1, win_player
+                return True, old_seg.parent, self.prev_card, self.step - 1, win_player
             else:
-                return True, self.get_card(old_x1, old_y1), self.prev_card, self.step - 1, 0
+                return True, old_seg.parent, self.prev_card, self.step - 1, 0
         else:
             return False, None, None, self.step, 0
 
@@ -157,10 +161,12 @@ class Game:
             self.board[seg.y][seg.x] = seg
 
         # check surrounding cells
-        if card.seg[0].y != 0 and (not isinstance(self.board[card.seg[0].y - 1][card.seg[0].x], CardSegment)):
-            for seg in card.seg:
-                self.board[seg.y][seg.x] = 0
-            return False
+        if card.seg[0].y != 0:
+            if (not isinstance(self.board[card.seg[0].y - 1][card.seg[0].x], CardSegment)) or \
+                    (not isinstance(self.board[card.seg[1].y - 1][card.seg[1].x], CardSegment)):
+                for seg in card.seg:
+                    self.board[seg.y][seg.x] = 0
+                return False
 
         return True
 
@@ -243,13 +249,18 @@ class Game:
 
 
 def main():
+    print('''
+===============================
+Regular Move
+===============================
+        ''')
     game = Game(Choice.COLOR)
 
-    print(game.place_card(1, 0, 0))
+    print(game.place_card(1, 0, 1))
     print("Player " + str(game.get_player()))
     game.print_board()
 
-    print(game.place_card(1, 0, 1))
+    print(game.place_card(1, 2, 1))
     print("Player " + str(game.get_player()))
     game.print_board()
 
@@ -274,6 +285,58 @@ def main():
     print(game.place_card(7, 0, 3))
     print("Player " + str(game.get_player()))
     game.print_board()
+
+    print('''
+===============================
+Test Recycling
+===============================
+    ''')
+    game = Game(Choice.COLOR)
+    card_type = [1, 5, 3, 7, 1, 5]
+    for i in range(0, 6):
+        for j in range(0, 7, 2):
+            print(game.place_card(card_type[i], j, i))
+
+    game.print_board()
+
+    # invalid
+    print(game.recycle_card(6, 5, 7, 5, 2, 0, 6))
+    game.print_board()
+
+    print(game.recycle_card(4, 5, 5, 5, 2, 0, 6))
+    game.print_board()
+
+    # # test deep copy
+    # new_board = np.copy(game.board)
+    # game.board[5][7].color = Color.RED
+    #
+    # print("Original Board")
+    # game.print_board()
+    #
+    # print("Copied Board")
+    # print(new_board[5][7])
+    #
+    # # test deep copy speed
+    # time0 = time.time()
+    # for i in range(10000):
+    #     tmp = np.copy(game.board)
+    # time1 = time.time()
+    #
+    # print('np copy: {:f}'.format(time1 - time0))
+    #
+    # time0 = time.time()
+    # for i in range(10000):
+    #     tmp = copy.copy(game.board)
+    # time1 = time.time()
+    #
+    # print('copy copy: {:f}'.format(time1 - time0))
+    #
+    # time0 = time.time()
+    # for i in range(10000):
+    #     tmp = copy.deepcopy(game.board)
+    # time1 = time.time()
+    #
+    # print('deep copy: {:f}'.format(time1 - time0))
 
 
 if __name__ == '__main__':
