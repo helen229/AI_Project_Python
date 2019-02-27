@@ -51,9 +51,11 @@ class App(QWidget):
 
         self.textLable = QLabel()
         self.countLable = QLabel()
+        self.invalidLable = QLabel()
 
         self.textLable.setFont(font)
         self.countLable.setFont(font)
+        self.invalidLable.setFont(font)
 
         self.phase = 'Normal Phase'
         self.textLable.setText(self.phase)
@@ -69,7 +71,9 @@ class App(QWidget):
 
         self.lableLayout = QVBoxLayout()
         self.lableLayout.addWidget(self.textLable)
+        self.lableLayout.addWidget(self.invalidLable)
         self.lableLayout.addWidget(self.countLable)
+
 
         self.buttonSide1Layout = QVBoxLayout()
         self.buttonSide1Layout.addWidget(self.button1)
@@ -222,6 +226,7 @@ class App(QWidget):
         )
         # print(is_valid, card_removed, card_added, count, win_id)
         if is_valid:
+            self.invalidLable.setText("")
             self.tableWidget.setItem(
                 11-card_removed.seg[0].y,card_removed.seg[0].x,
                 QTableWidgetItem("")
@@ -258,7 +263,7 @@ class App(QWidget):
                 11 - card_added.seg[1].y, card_added.seg[1].x,
             ).setBackground(QtGui.QColor(new_color1[0], new_color1[1], new_color1[2]))
         else:
-            print("invalid move")
+            self.invalidLable.setText("Invalid Move")
         if win_id != 0 or count == 60:
             self.textLable.setText("Game End!")
 
@@ -275,6 +280,7 @@ class App(QWidget):
             self.tableWidget.clearSelection()
             if is_valid:
                 self.countLable.setText("count: "+str(count))
+                self.invalidLable.setText("")
                 if buttonNum == 1:
                     self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
                     self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      O"))
@@ -315,6 +321,8 @@ class App(QWidget):
                     self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
                     self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
                     self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+            else:
+                self.invalidLable.setText("Invalid Move")
             if count > 10:
                 self.phase = 'Recyle Phase'
                 self.textLable.setText(self.phase)
