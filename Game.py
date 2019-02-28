@@ -42,7 +42,7 @@ class Game:
         # self.phase = self.Phase.NORMAL
         self.step = 1
         self.prev_card = None
-        self.board = np.zeros((12, 8), dtype=np.object)
+        self.board = np.zeros((12, 8), dtype=CardSegment)
 
         print('Player 1 chose to play ' + self.choice_p[1].name)
         print('Player 2 will play ' + self.choice_p[2].name)
@@ -306,31 +306,33 @@ Test Recycling
     print(game.recycle_card(4, 5, 5, 5, 2, 0, 6))
     game.print_board()
 
-    # # test deep copy
-    # new_board = np.copy(game.board)
-    # game.board[5][7].color = Color.RED
-    #
-    # print("Original Board")
-    # game.print_board()
-    #
-    # print("Copied Board")
-    # print(new_board[5][7])
-    #
-    # # test deep copy speed
-    # time0 = time.time()
-    # for i in range(10000):
-    #     tmp = np.copy(game.board)
-    # time1 = time.time()
-    #
-    # print('np copy: {:f}'.format(time1 - time0))
-    #
-    # time0 = time.time()
-    # for i in range(10000):
-    #     tmp = copy.copy(game.board)
-    # time1 = time.time()
-    #
-    # print('copy copy: {:f}'.format(time1 - time0))
-    #
+    # test deep copy
+    new_board = np.copy(game.board)
+    game.board[5][7].color = Color.RED
+
+    print("Original Board")
+    game.print_board()
+
+    print("Copied Board")
+    print(new_board[5][7])
+
+    # test deep copy speed
+    time0 = time.time()
+    for i in range(10000):
+        tmp = np.copy(game.board)
+        card=Card(0,1,8)
+    time1 = time.time()
+
+    print('np copy: {:f}'.format(time1 - time0))
+
+    time0 = time.time()
+    for i in range(10000):
+        tmp = copy.copy(game.board)
+        card = Card(0, 1, 8)
+    time1 = time.time()
+
+    print('copy copy: {:f}'.format(time1 - time0))
+
     # time0 = time.time()
     # for i in range(10000):
     #     tmp = copy.deepcopy(game.board)
