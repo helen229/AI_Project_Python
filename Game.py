@@ -16,6 +16,7 @@ import Game_Tree
 import State
 from Minimax_AlphaBeta import AlphaBeta
 
+
 class Phase(Enum):
     NORMAL = 1
     RECYCLE = 2
@@ -111,7 +112,8 @@ class Game:
         else:
             return True, None, card
 
-    def play_recycle(self, old_x1, old_y1, old_x2, old_y2, new_card_type, new_x, new_y, board, prev_card, is_game_play):
+    @staticmethod
+    def play_recycle(old_x1, old_y1, old_x2, old_y2, new_card_type, new_x, new_y, board, prev_card, is_game_play):
 
         selected_seg1 = board[old_y1][old_x1]
         selected_seg2 = board[old_y2][old_x2]
@@ -126,12 +128,12 @@ class Game:
                 return False, None, prev_card
 
             # if remove legal
-            if self.is_remove_legal(selected_seg1.parent, board):
+            if Game.is_remove_legal(selected_seg1.parent, board):
                 # temporarily delete the card
                 board[old_y1][old_x1] = 0
                 board[old_y2][old_x2] = 0
                 # delegate to play_normal
-                is_valid_play, win_list, prev_card = self.play_normal(new_card_type, new_x, new_y, board, prev_card, is_game_play)
+                is_valid_play, win_list, prev_card = Game.play_normal(new_card_type, new_x, new_y, board, prev_card, is_game_play)
                 # restore if it's not a valid new card
                 if not is_valid_play:
                     board[old_y1][old_x1] = selected_seg1
@@ -139,10 +141,11 @@ class Game:
                 return is_valid_play, win_list, prev_card
         return False, None, prev_card
 
-    def is_remove_legal(self, card, board):
+    @staticmethod
+    def is_remove_legal(card, board):
         if card.card_type % 2 == 1:
             # horizontal cards
-            if card.seg[0].y < self.max_y - 1:
+            if card.seg[0].y < Game.max_y - 1:
                 # not the last row
                 for seg in card.seg:
                     if isinstance(board[seg.y + 1][seg.x], CardSegment):
@@ -150,7 +153,7 @@ class Game:
 
             return True
         else:
-            if card.seg[1].y < self.max_y - 1:
+            if card.seg[1].y < Game.max_y - 1:
                 if isinstance(board[card.seg[1].y + 1][card.seg[1].x], CardSegment):
                     return False
             return True
