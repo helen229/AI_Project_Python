@@ -2,7 +2,8 @@ import numpy as np
 from CardSegment import CardSegment
 from CardSegment import Color
 from CardSegment import Dot
-# from Game import Game
+import Game
+
 
 class State:
 
@@ -37,11 +38,15 @@ class State:
             if self.highest_row[i] < 12:
                 for t in range(1, 9):
                     new_board = np.copy(self.board)
-                    # is_valid_play, win_list, prev_card = Game.play_normal(t, i, self.highest_row[i], new_board,
-                    #                                                       self.prev_card, False)
-                    # if is_valid_play:
-                    state = State(self, new_board, self.step + 1, self.prev_card )
-                    self.children.append(state)
+                    is_valid_play, win_list, prev_card = Game.Game.play_normal(t, i, self.highest_row[i], new_board,
+                                                                               self.prev_card, False)
+                    if is_valid_play:
+                        state = State(self, new_board, self.step + 1, prev_card)
+                        self.children.append(state)
+
+    def generate_recycle_move(self):
+        if self.highest_row[0] == -1:
+            self.find_highest_row()
 
     def find_highest_row(self):
         for j in range(8):
@@ -57,72 +62,72 @@ class State:
         for j in range(8):
             for i in range(12):
                 if isinstance(self.board[i][j], CardSegment):
-                    coordinates_Val = i*10 + j -1
+                    coordinates_Val = i * 10 + j - 1
                     print(coordinates_Val)
                     if (self.board[i][j].color == Color.WHITE and self.board[i][j].dot == Dot.EMPTY):
                         sum += coordinates_Val
                     if (self.board[i][j].color == Color.WHITE and self.board[i][j].dot == Dot.SOLID):
-                        sum += 3*coordinates_Val
+                        sum += 3 * coordinates_Val
                     if (self.board[i][j].color == Color.RED and self.board[i][j].dot == Dot.SOLID):
                         sum -= 2 * coordinates_Val
                     if (self.board[i][j].color == Color.RED and self.board[i][j].dot == Dot.EMPTY):
                         sum -= 1.5 * coordinates_Val
 
-#
-# def main():
-#     # print('''
-#     # ===============================
-#     # Regular Play: full first row
-#     # ===============================
-#     #         ''')
-#     #
-#     # game = Game(Choice.COLOR)
-#     # game.place_card(1, 0, 0)
-#     # game.place_card(1, 2, 0)
-#     # game.place_card(1, 4, 0)
-#     # is_valid, prev_card, step, win= game.place_card(1, 6, 0)
-#     # Game.print_board(game.board)
-#     # state=State(None, game.board, 4, prev_card)
-#     # state.generate_children()
-#     #
-#     # for child in state.children:
-#     #     Game.print_board(child.board)
-#
-#     # print('''
-#     # ===============================
-#     # Regular Play: empty first row
-#     # ===============================
-#     #         ''')
-#     #
-#     # game = Game(Choice.COLOR)
-#     # Game.print_board(game.board)
-#     # state=State(None, game.board, 0, None)
-#     # state.generate_children()
-#     #
-#     # for child in state.children:
-#     #     Game.print_board(child.board)
-#
-#     print('''
-#     ===============================
-#     Regular Play: uneven last row
-#     ===============================
-#             ''')
-#
-#     game = Game(Choice.COLOR)
-#     game.place_card(1, 0, 0)
-#     game.place_card(1, 2, 0)
-#     game.place_card(1, 4, 0)
-#     game.place_card(1, 6, 0)
-#     game.place_card(2, 0, 1)
-#     game.place_card(1, 2, 1)
-#     is_valid, prev_card, step, win= game.place_card(1, 4, 1)
-#     Game.print_board(game.board)
-#     state=State(None, game.board, 4, prev_card)
-#     state.generate_children()
-#
-#     for child in state.children:
-#         Game.print_board(child.board)
-#
-#
-# if __name__ == '__main__':
-#     main()
+
+def main():
+    # print('''
+    # ===============================
+    # Regular Play: full first row
+    # ===============================
+    #         ''')
+    #
+    # game = Game(Choice.COLOR)
+    # game.place_card(1, 0, 0)
+    # game.place_card(1, 2, 0)
+    # game.place_card(1, 4, 0)
+    # is_valid, prev_card, step, win= game.place_card(1, 6, 0)
+    # Game.print_board(game.board)
+    # state=State(None, game.board, 4, prev_card)
+    # state.generate_children()
+    #
+    # for child in state.children:
+    #     Game.print_board(child.board)
+
+    # print('''
+    # ===============================
+    # Regular Play: empty first row
+    # ===============================
+    #         ''')
+    #
+    # game = Game(Choice.COLOR)
+    # Game.print_board(game.board)
+    # state=State(None, game.board, 0, None)
+    # state.generate_children()
+    #
+    # for child in state.children:
+    #     Game.print_board(child.board)
+
+    print('''
+    ===============================
+    Regular Play: uneven last row
+    ===============================
+            ''')
+
+    game = Game.Game(Game.Choice.COLOR)
+    game.place_card(1, 0, 0)
+    game.place_card(1, 2, 0)
+    game.place_card(1, 4, 0)
+    game.place_card(1, 6, 0)
+    game.place_card(2, 0, 1)
+    game.place_card(1, 2, 1)
+    is_valid, prev_card, step, win = game.place_card(1, 4, 1)
+    Game.Game.print_board(game.board)
+    state = State(None, game.board, 4, prev_card)
+    state.generate_children()
+
+    for child in state.children:
+        Game.Game.print_board(child.board)
+
+
+if __name__ == '__main__':
+    main()

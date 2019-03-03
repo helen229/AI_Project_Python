@@ -12,7 +12,8 @@
 #     def getChildren(self):
 #         return self.Children
 
-from State import State
+import State
+
 class Game_Tree:
 
     def __init__(self, root):
