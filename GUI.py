@@ -1,4 +1,3 @@
-import numpy as np
 import sys
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
@@ -33,14 +32,25 @@ class App(QWidget):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         # mode = input('Auto mode or Manual mode (1-Auto, 2-Manual): ')
-        #
-        # if mode[0] == '1':
-        #     auto_input_sequence = input('Human Player: play first or second? (1-First, 2-Second): ')
-        #     auto_input_choice = input('Human Player: play color or dot? (1-Color, 2-Dot): ')
-        # else:
-        manual_input = input('Player 1: play color or dot? (1-Color, 2-Dot): ')
+        self.mode='1'
 
-        if manual_input=='1':
+        # if mode[0] == '1':
+        auto_input_sequence = input('Human Player: play first or second? (1-First, 2-Second): ')
+        auto_input_choice = input('Human Player: play color or dot? (1-Color, 2-Dot): ')
+        # else:
+        #     manual_input = input('Player 1: play color or dot? (1-Color, 2-Dot): ')
+        # # manual mode
+        # if manual_input=='1':
+        #     self.choice = Choice.COLOR
+        # else:
+        #     self.choice = Choice.DOT
+        # auto mode
+        if auto_input_sequence =='1':
+            self.curPlayer = "Human"
+        else:
+            self.curPlayer = "Computer"
+
+        if auto_input_choice =='1':
             self.choice = Choice.COLOR
         else:
             self.choice = Choice.DOT
@@ -59,7 +69,6 @@ class App(QWidget):
 
         self.phase = 'Normal Phase'
         self.textLable.setText(self.phase)
-        # self.countLable.setText("count: ")
         self.game = Game(self.choice)
 
         self.createTable()
@@ -89,6 +98,7 @@ class App(QWidget):
 
         self.AnglebuttonSideLayout = QVBoxLayout()
         self.AnglebuttonSideLayout.addWidget(self.RecycleButton)
+        self.AnglebuttonSideLayout.addWidget(self.computerPlayerButton)
 
         self.Operationlayout = QHBoxLayout()
         self.Operationlayout.addLayout(self.buttonSide1Layout)
@@ -117,20 +127,15 @@ class App(QWidget):
 
         for i in range(self.tableWidget.columnCount()):
             for j in range(self.tableWidget.rowCount()):
-                #self.tableWidget.setItem(j, i, QTableWidgetItem("      ●"))
-                # self.tableWidget.setItem(j, i, QTableWidgetItem("       O"))
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
         self.tableWidget.move(0, 0)
 
-        # table selection changec
+        # table selection change
         self.tableWidget.clicked.connect(self.table_on_click)
-        # print("press")
 
 
     @pyqtSlot()
     def table_on_click(self):
-        # print("click\n")
-        # print(self.tableWidget.cle)
         for currentQTableWidgetItem in self.tableWidget.selectedItems():
             self.positionX = currentQTableWidgetItem.column()
             self.positionY = currentQTableWidgetItem.row()
@@ -147,61 +152,23 @@ class App(QWidget):
     def createButton(self):
 
         self.button1 = QPushButton('', self)
-        self.button1.isFlat()
-        self.button1.setStyleSheet('background: transparent')
-        # self.button1.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.button1.setIcon(QtGui.QIcon('Type1.png'))
-        self.button1.setIconSize(QtCore.QSize(300, 200))
-        self.button1.clicked.connect(lambda *args: self.buttonType_on_click(1))
-
         self.button2 = QPushButton('', self)
-        self.button2.isFlat()
-        self.button2.setStyleSheet('background: transparent')
-        self.button2.setIcon(QtGui.QIcon('Type2.png'))
-        self.button2.setIconSize(QtCore.QSize(200, 200))
-        self.button2.clicked.connect(lambda *args: self.buttonType_on_click(2))
-
         self.button3 = QPushButton('', self)
-        self.button3.isFlat()
-        self.button3.setStyleSheet('background: transparent')
-        self.button3.setIcon(QtGui.QIcon('Type3.png'))
-        self.button3.setIconSize(QtCore.QSize(300, 200))
-        self.button3.clicked.connect(lambda *args: self.buttonType_on_click(3))
-
         self.button4 = QPushButton('', self)
-        self.button4.isFlat()
-        self.button4.setStyleSheet('background: transparent')
-        self.button4.setIcon(QtGui.QIcon('Type4.png'))
-        self.button4.setIconSize(QtCore.QSize(200, 200))
-        self.button4.clicked.connect(lambda *args: self.buttonType_on_click(4))
-
         self.button5 = QPushButton('', self)
-        self.button5.isFlat()
-        self.button5.setStyleSheet('background: transparent')
-        self.button5.setIcon(QtGui.QIcon('Type5.png'))
-        self.button5.setIconSize(QtCore.QSize(300, 200))
-        self.button5.clicked.connect(lambda *args: self.buttonType_on_click(5))
-
         self.button6 = QPushButton('', self)
-        self.button6.isFlat()
-        self.button6.setStyleSheet('background: transparent')
-        self.button6.setIcon(QtGui.QIcon('Type6.png'))
-        self.button6.setIconSize(QtCore.QSize(200, 200))
-        self.button6.clicked.connect(lambda *args: self.buttonType_on_click(6))
-
         self.button7 = QPushButton('', self)
-        self.button7.isFlat()
-        self.button7.setStyleSheet('background: transparent')
-        self.button7.setIcon(QtGui.QIcon('Type7.png'))
-        self.button7.setIconSize(QtCore.QSize(300, 200))
-        self.button7.clicked.connect(lambda *args: self.buttonType_on_click(7))
-
         self.button8 = QPushButton('', self)
-        self.button8.isFlat()
-        self.button8.setStyleSheet('background: transparent')
-        self.button8.setIcon(QtGui.QIcon('Type8.png'))
-        self.button8.setIconSize(QtCore.QSize(200, 200))
-        self.button8.clicked.connect(lambda *args: self.buttonType_on_click(8))
+
+        self.createButtonHelper(self.button1, 'Type1.png', 300, 200, 1)
+        self.createButtonHelper(self.button2, 'Type2.png', 200, 200, 2)
+        self.createButtonHelper(self.button3, 'Type3.png', 300, 200, 3)
+        self.createButtonHelper(self.button4, 'Type4.png', 200, 200, 4)
+
+        self.createButtonHelper(self.button5, 'Type5.png', 300, 200, 5)
+        self.createButtonHelper(self.button6, 'Type6.png', 200, 200, 6)
+        self.createButtonHelper(self.button7, 'Type7.png', 300, 200, 7)
+        self.createButtonHelper(self.button8, 'Type8.png', 200, 200, 8)
 
         self.RecycleButton = QPushButton('', self)
         self.RecycleButton.isFlat()
@@ -209,8 +176,21 @@ class App(QWidget):
         self.RecycleButton.setIcon(QtGui.QIcon('Recyle.jpg'))
         self.RecycleButton.setIconSize(QtCore.QSize(200, 200))
         self.RecycleButton.clicked.connect(self.RecycleButton_on_click)
-        # self.button1.setToolTip('This is an example button')
-        # self.button.move(2300, 200)
+
+        self.computerPlayerButton = QPushButton('', self)
+        self.computerPlayerButton.isFlat()
+        self.computerPlayerButton.setStyleSheet('background: transparent')
+        self.computerPlayerButton.setIcon(QtGui.QIcon('Play_image.png'))
+        self.computerPlayerButton.setIconSize(QtCore.QSize(200, 200))
+        self.computerPlayerButton.clicked.connect(self.computerPlayerButton_on_click)
+
+
+    def createButtonHelper(self, button, icon, sizeY, sizeX, number):
+        button.isFlat()
+        button.setStyleSheet('background: transparent')
+        button.setIcon(QtGui.QIcon(icon))
+        button.setIconSize(QtCore.QSize(sizeY, sizeX))
+        button.clicked.connect(lambda *args: self.buttonType_on_click(number))
 
 
     @pyqtSlot() #send the input to game
@@ -227,6 +207,7 @@ class App(QWidget):
         # print(is_valid, card_removed, card_added, count, win_id)
         if is_valid:
             self.invalidLable.setText("")
+            # remove previous card
             self.tableWidget.setItem(
                 11-card_removed.seg[0].y,card_removed.seg[0].x,
                 QTableWidgetItem("")
@@ -247,6 +228,7 @@ class App(QWidget):
             new_dot1, new_color1 = self.recycleHelper(card_added.seg[1])
 
             self.tableWidget.clearSelection()
+            # add new card
             self.tableWidget.setItem(
                 11 - card_added.seg[0].y, card_added.seg[0].x,
                 QTableWidgetItem(new_dot0)
@@ -268,6 +250,25 @@ class App(QWidget):
             self.textLable.setText("Game End!")
 
 
+    def recycleHelper(self, seg):
+        new_color = -1
+        new_dot = -1
+        if seg.color == Color.RED:
+            new_color = [255, 0, 0]
+        elif seg.color == Color.WHITE:
+            new_color = [225, 225, 225]
+        if seg.dot == Dot.SOLID:
+            new_dot = "      ●"
+        elif seg.dot == Dot.EMPTY:
+            new_dot = "      O"
+        return new_dot, new_color
+
+    @pyqtSlot()  # computer move
+    def computerPlayerButton_on_click(self):
+        print("computer move")
+        card, count, win_id = self.game.computer_move()
+        print(count)
+
     @pyqtSlot()
     def buttonType_on_click(self,buttonNum):
         self.type = buttonNum
@@ -275,12 +276,16 @@ class App(QWidget):
         ShowX = str(chr(65 + self.positionX))
         if self.phase == 'Normal Phase':
             print(self.positionX, ShowY - 1, self.type)
+            # auto mode Human player or manual mode
+            # if (self.mode == '1' and self.curPlayer == "Human") or self.mode == 0:
             is_valid, card, count, win_id = self.game.place_card(self.type, self.positionX, ShowY - 1)
-            print(is_valid, card, count, win_id)
+
+            # print(is_valid, card, count, win_id)
             self.tableWidget.clearSelection()
             if is_valid:
                 self.countLable.setText("count: "+str(count))
                 self.invalidLable.setText("")
+                # paint the cells
                 if buttonNum == 1:
                     self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
                     self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      O"))
@@ -323,24 +328,11 @@ class App(QWidget):
                     self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
             else:
                 self.invalidLable.setText("Invalid Move")
-            if count > 10:
+            if count > 6:
                 self.phase = 'Recyle Phase'
                 self.textLable.setText(self.phase)
             if win_id != 0:
                 self.textLable.setText("Game End!")
-
-    def recycleHelper(self, seg):
-        new_color = -1
-        new_dot = -1
-        if seg.color == Color.RED:
-            new_color = [255, 0, 0]
-        elif seg.color == Color.WHITE:
-            new_color = [225, 225, 225]
-        if seg.dot == Dot.SOLID:
-            new_dot = "      ●"
-        elif seg.dot == Dot.EMPTY:
-            new_dot = "      O"
-        return new_dot, new_color
 
 
 if __name__ == '__main__':

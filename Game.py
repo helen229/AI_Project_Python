@@ -12,7 +12,9 @@ from CardSegment import Color
 from CardSegment import Dot
 from colorama import init
 from colorama import Fore, Back, Style
-
+from Game_Tree import Game_Tree
+from State import State
+from Minimax_AlphaBeta import AlphaBeta
 
 class Phase(Enum):
     NORMAL = 1
@@ -254,103 +256,14 @@ class Game:
             print()
         print('     ABCDEFGH')
 
-
-def main():
-    print('''
-===============================
-Regular Move
-===============================
-        ''')
-    game = Game(Choice.COLOR)
-
-    print(game.place_card(1, 0, 1))
-    print("Player " + str(game.get_player()))
-    Game.print_board(game.board)
-
-    print(game.place_card(1, 2, 1))
-    print("Player " + str(game.get_player()))
-    Game.print_board(game.board)
-
-    print(game.place_card(2, 2, 0))
-    print("Player " + str(game.get_player()))
-    Game.print_board(game.board)
-
-    # invalid placement
-    print(game.place_card(1, 3, 2))
-    print("Player " + str(game.get_player()))
-    Game.print_board(game.board)
-
-    # invalid placement
-    print(game.place_card(1, 0, 0))
-    print("Player " + str(game.get_player()))
-    Game.print_board(game.board)
-
-    print(game.place_card(1, 0, 2))
-    print("Player " + str(game.get_player()))
-    Game.print_board(game.board)
-
-    print(game.place_card(7, 0, 3))
-    print("Player " + str(game.get_player()))
-    Game.print_board(game.board)
-
-    print('''
-===============================
-Test Recycling
-===============================
-    ''')
-    game = Game(Choice.COLOR)
-    card_type = [1, 5, 3, 7, 1, 5]
-    for i in range(6):
-        for j in range(0, 7, 2):
-            print(game.place_card(card_type[i], j, i))
-
-    Game.print_board(game.board)
-
-    # invalid
-    print(game.recycle_card(6, 5, 7, 5, 2, 0, 6))
-    Game.print_board(game.board)
-
-    print(game.recycle_card(4, 5, 5, 5, 2, 0, 6))
-    Game.print_board(game.board)
-
-    print('''
-    ===============================
-    Test Recycling
-    ===============================
-        ''')
-    # new_board = np.copy(game.board)
-    # game.board[5][7].color = Color.RED
-    #
-    # print("Original Board")
-    # game.print_board()
-    #
-    # print("Copied Board")
-    # print(new_board[5][7])
-
-    # # test deep copy speed
-    # time0 = time.time()
-    # for i in range(10000):
-    #     tmp = np.copy(game.board)
-    #     card=Card(0,1,8)
-    # time1 = time.time()
-    #
-    # print('np copy: {:f}'.format(time1 - time0))
-    #
-    # time0 = time.time()
-    # for i in range(10000):
-    #     tmp = copy.copy(game.board)
-    #     card = Card(0, 1, 8)
-    # time1 = time.time()
-    #
-    # print('copy copy: {:f}'.format(time1 - time0))
-
-    # time0 = time.time()
-    # for i in range(10000):
-    #     tmp = copy.deepcopy(game.board)
-    # time1 = time.time()
-    #
-    # print('deep copy: {:f}'.format(time1 - time0))
-
-
-if __name__ == '__main__':
-    main()
+    def computer_move(self):
+        node = State(None, self.board, self.step, self.prev_card)
+        tree = Game_Tree(node)
+        print("tree start")
+        tree.generateNLayerTree(node, 2)
+        print("tree finsh")
+        # best_Move = AlphaBeta(tree).alpha_beta_search(tree.root)
+        # card = best_Move.prev_card
+        # count = best_Move.step
+        win_id = 0
+        return None, 2, win_id
