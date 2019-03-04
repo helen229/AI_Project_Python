@@ -68,7 +68,7 @@ class AlphaBeta:
 
     def getHeuristic(self, node):
         return node.get_Heuristic()
-
+#
 # def main():
 #     root = Node(3)
 #     node11 = Node(3)

@@ -266,8 +266,50 @@ class App(QWidget):
     @pyqtSlot()  # computer move
     def computerPlayerButton_on_click(self):
         print("computer move")
-        card, count, win_id = self.game.computer_move()
-        print(count)
+        card_removed, card_added, count, win_id = self.game.computer_move()
+
+        new_dot0, new_color0 = self.recycleHelper(card_added.seg[0])
+        new_dot1, new_color1 = self.recycleHelper(card_added.seg[1])
+
+        self.countLable.setText("count: " + str(count))
+        if count >23:
+            self.phase = 'Recyle Phase'
+        self.tableWidget.clearSelection()
+        if card_removed != None:
+            # remove previous card
+            self.tableWidget.setItem(
+                11 - card_removed.seg[0].y, card_removed.seg[0].x,
+                QTableWidgetItem("")
+            )
+            self.tableWidget.item(
+                11 - card_removed.seg[0].y, card_removed.seg[0].x,
+            ).setBackground(QtGui.QColor(255, 255, 255))
+
+            self.tableWidget.setItem(
+                11 - card_removed.seg[1].y, card_removed.seg[1].x,
+                QTableWidgetItem("")
+            )
+            self.tableWidget.item(
+                11 - card_removed.seg[1].y, card_removed.seg[1].x,
+            ).setBackground(QtGui.QColor(255, 255, 255))
+        # add new card
+        self.tableWidget.setItem(
+            11 - card_added.seg[0].y, card_added.seg[0].x,
+            QTableWidgetItem(new_dot0)
+        )
+        self.tableWidget.item(
+            11 - card_added.seg[0].y, card_added.seg[0].x,
+        ).setBackground(QtGui.QColor(new_color0[0], new_color0[1], new_color0[2]))
+
+        self.tableWidget.setItem(
+            11 - card_added.seg[1].y, card_added.seg[1].x,
+            QTableWidgetItem(new_dot1)
+        )
+        self.tableWidget.item(
+            11 - card_added.seg[1].y, card_added.seg[1].x,
+        ).setBackground(QtGui.QColor(new_color1[0], new_color1[1], new_color1[2]))
+        if win_id != 0 or count == 60:
+            self.textLable.setText("Game End!")
 
     @pyqtSlot()
     def buttonType_on_click(self,buttonNum):
@@ -328,7 +370,7 @@ class App(QWidget):
                     self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
             else:
                 self.invalidLable.setText("Invalid Move")
-            if count > 6:
+            if count > 24:
                 self.phase = 'Recyle Phase'
                 self.textLable.setText(self.phase)
             if win_id != 0:

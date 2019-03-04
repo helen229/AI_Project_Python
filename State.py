@@ -126,7 +126,6 @@ class State:
             for i in range(12):
                 if isinstance(self.board[i][j], CardSegment):
                     coordinates_Val = i * 10 + j - 1
-                    print(coordinates_Val)
                     if (self.board[i][j].color == Color.WHITE and self.board[i][j].dot == Dot.EMPTY):
                         sum += coordinates_Val
                     if (self.board[i][j].color == Color.WHITE and self.board[i][j].dot == Dot.SOLID):
@@ -135,6 +134,7 @@ class State:
                         sum -= 2 * coordinates_Val
                     if (self.board[i][j].color == Color.RED and self.board[i][j].dot == Dot.EMPTY):
                         sum -= 1.5 * coordinates_Val
+        return sum
 
 
 def main():
@@ -263,3 +263,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
