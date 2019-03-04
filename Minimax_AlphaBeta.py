@@ -1,29 +1,42 @@
 
 import Game_Tree
-# from TreeDriver import Node
-# from TreeDriver import Tree
+from TreeDriver import Node
+from TreeDriver import Tree
 
 class AlphaBeta:
 
-    def __init__(self, game_tree):
+    def __init__(self, game_tree, curChoice):
         self.game_tree = game_tree  # GameTree
         self.root = game_tree.root  # GameNode
+        self.curChoice = curChoice
 
     def alpha_beta_search(self, node):
         infinity = float('inf')
-        best_val = -infinity
-        beta = infinity
 
-        childrenNodeList = self.getChildren(node)
-        best_state = None
-        for state in childrenNodeList:
-            value = self.min_value(state, best_val, beta)
-            state.val=value
-            if value > best_val:
-                best_val = value
-                best_state = state
-        # print ("AlphaBeta:  Utility Value of Root Node: = " + str(best_val))
-        # print ("AlphaBeta:  Best State is: " + best_state.Name)
+        if self.curChoice == "Choice.COLOR":
+            best_val = -infinity
+            beta = infinity
+
+            childrenNodeList = self.getChildren(node)
+            best_state = None
+            for state in childrenNodeList:
+                value = self.min_value(state, best_val, beta)
+                state.val = value
+                if value > best_val:
+                    best_val = value
+                    best_state = state
+        else:
+            best_val = infinity
+            alpha = -infinity
+
+            childrenNodeList = self.getChildren(node)
+            best_state = None
+            for state in childrenNodeList:
+                value = self.max_value(state, alpha, best_val)
+                state.val = value
+                if value < best_val:
+                    best_val = value
+                    best_state = state
         return best_state
 
     def max_value(self, node, alpha, beta):
@@ -67,7 +80,8 @@ class AlphaBeta:
         return len(node.children) == 0
 
     def getHeuristic(self, node):
-        return node.get_Heuristic()
+        # return node.val
+         return node.get_Heuristic()
 #
 # def main():
 #     root = Node(3)
@@ -115,7 +129,9 @@ class AlphaBeta:
 #
 #     tree=Tree(root)
 #     tree.printTree(root,1)
-#     alpha = AlphaBeta(tree)
+#     cur = "Choice.DOT"
+#     alpha = AlphaBeta(tree, cur)
+#
 #     best = alpha.alpha_beta_search(root)
 #     tree.printTree(root, 1)
 #     print(best.val)

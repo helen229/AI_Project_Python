@@ -258,12 +258,12 @@ class Game:
         print('     ABCDEFGH')
 
 
-    def computer_move(self):
+    def computer_move(self, choice):
         time0 = time.time()
         node = State.State(None, self.board, self.step, self.prev_card)
         tree = Game_Tree.Game_Tree(node)
         tree.generateNLayerTree(node, 1)
-        best_Move = AlphaBeta(tree).alpha_beta_search(tree.root)
+        best_Move = AlphaBeta(tree,choice).alpha_beta_search(tree.root)
 
         if self.step < 24:
             card_removed = None

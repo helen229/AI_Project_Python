@@ -31,44 +31,60 @@ class App(QWidget):
         self.setStyleSheet('background-color: white')
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        # mode = input('Auto mode or Manual mode (1-Auto, 2-Manual): ')
-        self.mode='1'
+        mode = input('Auto mode or Manual mode (1-Auto, 2-Manual): ')
+        self.mode = mode
 
-        # if mode[0] == '1':
-        auto_input_sequence = input('Human Player: play first or second? (1-First, 2-Second): ')
-        auto_input_choice = input('Human Player: play color or dot? (1-Color, 2-Dot): ')
-        # else:
-        #     manual_input = input('Player 1: play color or dot? (1-Color, 2-Dot): ')
-        # # manual mode
-        # if manual_input=='1':
-        #     self.choice = Choice.COLOR
-        # else:
-        #     self.choice = Choice.DOT
-        # auto mode
-        if auto_input_sequence =='1':
-            self.curPlayer = "Human"
-        else:
-            self.curPlayer = "Computer"
+        if mode == '1':
+            auto_input_sequence = input('Human Player: play first or second? (1-First, 2-Second): ')
+            auto_input_choice = input('Human Player: play color or dot? (1-Color, 2-Dot): ')
+            # auto mode
+            if auto_input_sequence == '1':
+                self.curPlayer = "Human Player"
+            else:
+                self.curPlayer = "Computer Player"
 
-        if auto_input_choice =='1':
-            self.choice = Choice.COLOR
+            if auto_input_choice == '1' and auto_input_sequence == '1':
+                self.choice = Choice.COLOR
+            elif auto_input_choice == '1' and auto_input_sequence == '2':
+                self.choice = Choice.DOT
+            elif auto_input_choice == '2' and auto_input_sequence == '1':
+                self.choice = Choice.DOT
+            elif auto_input_choice == '2' and auto_input_sequence == '2':
+                self.choice = Choice.COLOR
+
         else:
-            self.choice = Choice.DOT
+            manual_input = input('Player 1: play color or dot? (1-Color, 2-Dot): ')
+            # manual mode
+            self.curPlayer = "Player 1"
+            if manual_input == '1':
+                self.choice = Choice.COLOR
+            else:
+                self.choice = Choice.DOT
+
+
+
 
         font = QtGui.QFont()
         font.setPixelSize(50)
         font.setBold(True)
 
+        smallfont = QtGui.QFont()
+        smallfont.setPixelSize(40)
+
         self.textLable = QLabel()
         self.countLable = QLabel()
         self.invalidLable = QLabel()
+        self.playerLable = QLabel()
 
         self.textLable.setFont(font)
         self.countLable.setFont(font)
         self.invalidLable.setFont(font)
+        self.playerLable.setFont(smallfont)
 
         self.phase = 'Normal Phase'
         self.textLable.setText(self.phase)
+        self.playerLable.setText(self.curPlayer+'('+str(self.choice)+')')
+
         self.game = Game(self.choice)
 
         self.createTable()
@@ -80,9 +96,9 @@ class App(QWidget):
 
         self.lableLayout = QVBoxLayout()
         self.lableLayout.addWidget(self.textLable)
-        self.lableLayout.addWidget(self.invalidLable)
+        self.lableLayout.addWidget(self.playerLable)
         self.lableLayout.addWidget(self.countLable)
-
+        self.lableLayout.addWidget(self.invalidLable)
 
         self.buttonSide1Layout = QVBoxLayout()
         self.buttonSide1Layout.addWidget(self.button1)
@@ -266,50 +282,56 @@ class App(QWidget):
     @pyqtSlot()  # computer move
     def computerPlayerButton_on_click(self):
         print("computer move")
-        card_removed, card_added, count, win_id = self.game.computer_move()
+        if self.curPlayer == "Computer Player":
+            card_removed, card_added, count, win_id = self.game.computer_move(str(self.choice))
 
-        new_dot0, new_color0 = self.recycleHelper(card_added.seg[0])
-        new_dot1, new_color1 = self.recycleHelper(card_added.seg[1])
+            new_dot0, new_color0 = self.recycleHelper(card_added.seg[0])
+            new_dot1, new_color1 = self.recycleHelper(card_added.seg[1])
 
-        self.countLable.setText("count: " + str(count))
-        if count >23:
-            self.phase = 'Recyle Phase'
-        self.tableWidget.clearSelection()
-        if card_removed != None:
-            # remove previous card
+            self.countLable.setText("count: " + str(count))
+            self.playerChange()
+            self.playerLable.setText(self.curPlayer + '(' + str(self.choice) + ')')
+            self.invalidLable.setText("")
+            if count >23:
+                self.phase = 'Recyle Phase'
+            self.tableWidget.clearSelection()
+            if card_removed != None:
+                # remove previous card
+                self.tableWidget.setItem(
+                    11 - card_removed.seg[0].y, card_removed.seg[0].x,
+                    QTableWidgetItem("")
+                )
+                self.tableWidget.item(
+                    11 - card_removed.seg[0].y, card_removed.seg[0].x,
+                ).setBackground(QtGui.QColor(255, 255, 255))
+
+                self.tableWidget.setItem(
+                    11 - card_removed.seg[1].y, card_removed.seg[1].x,
+                    QTableWidgetItem("")
+                )
+                self.tableWidget.item(
+                    11 - card_removed.seg[1].y, card_removed.seg[1].x,
+                ).setBackground(QtGui.QColor(255, 255, 255))
+            # add new card
             self.tableWidget.setItem(
-                11 - card_removed.seg[0].y, card_removed.seg[0].x,
-                QTableWidgetItem("")
+                11 - card_added.seg[0].y, card_added.seg[0].x,
+                QTableWidgetItem(new_dot0)
             )
             self.tableWidget.item(
-                11 - card_removed.seg[0].y, card_removed.seg[0].x,
-            ).setBackground(QtGui.QColor(255, 255, 255))
+                11 - card_added.seg[0].y, card_added.seg[0].x,
+            ).setBackground(QtGui.QColor(new_color0[0], new_color0[1], new_color0[2]))
 
             self.tableWidget.setItem(
-                11 - card_removed.seg[1].y, card_removed.seg[1].x,
-                QTableWidgetItem("")
+                11 - card_added.seg[1].y, card_added.seg[1].x,
+                QTableWidgetItem(new_dot1)
             )
             self.tableWidget.item(
-                11 - card_removed.seg[1].y, card_removed.seg[1].x,
-            ).setBackground(QtGui.QColor(255, 255, 255))
-        # add new card
-        self.tableWidget.setItem(
-            11 - card_added.seg[0].y, card_added.seg[0].x,
-            QTableWidgetItem(new_dot0)
-        )
-        self.tableWidget.item(
-            11 - card_added.seg[0].y, card_added.seg[0].x,
-        ).setBackground(QtGui.QColor(new_color0[0], new_color0[1], new_color0[2]))
-
-        self.tableWidget.setItem(
-            11 - card_added.seg[1].y, card_added.seg[1].x,
-            QTableWidgetItem(new_dot1)
-        )
-        self.tableWidget.item(
-            11 - card_added.seg[1].y, card_added.seg[1].x,
-        ).setBackground(QtGui.QColor(new_color1[0], new_color1[1], new_color1[2]))
-        if win_id != 0 or count == 60:
-            self.textLable.setText("Game End!")
+                11 - card_added.seg[1].y, card_added.seg[1].x,
+            ).setBackground(QtGui.QColor(new_color1[0], new_color1[1], new_color1[2]))
+            if win_id != 0 or count == 60:
+                self.textLable.setText("Game End!")
+        else:
+            self.invalidLable.setText("Invalid Player")
 
     @pyqtSlot()
     def buttonType_on_click(self,buttonNum):
@@ -319,62 +341,81 @@ class App(QWidget):
         if self.phase == 'Normal Phase':
             print(self.positionX, ShowY - 1, self.type)
             # auto mode Human player or manual mode
-            # if (self.mode == '1' and self.curPlayer == "Human") or self.mode == 0:
-            is_valid, card, count, win_id = self.game.place_card(self.type, self.positionX, ShowY - 1)
-
-            # print(is_valid, card, count, win_id)
-            self.tableWidget.clearSelection()
-            if is_valid:
-                self.countLable.setText("count: "+str(count))
-                self.invalidLable.setText("")
-                # paint the cells
-                if buttonNum == 1:
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
-                    self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      O"))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
-                    self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(225, 225, 225))
-                elif buttonNum == 2:
-                    self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      ●"))
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
-                    self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
-                elif buttonNum == 3:
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
-                    self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      ●"))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
-                    self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(255, 0, 0))
-                elif buttonNum == 4:
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
-                    self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      O"))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
-                    self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
-                elif buttonNum == 5:
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
-                    self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      ●"))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
-                    self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(225, 225, 225))
-                elif buttonNum == 6:
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
-                    self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      O"))
-                    self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
-                elif buttonNum == 7:
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
-                    self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      O"))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
-                    self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(255, 0, 0))
-                elif buttonNum == 8:
-                    self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      ●"))
-                    self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
-                    self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
-                    self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+            if (self.mode == '1' and self.curPlayer == "Human Player") or self.mode == '2':
+                is_valid, card, count, win_id = self.game.place_card(self.type, self.positionX, ShowY - 1)
+                self.tableWidget.clearSelection()
+                if is_valid:
+                    self.countLable.setText("count: "+str(count))
+                    self.playerChange()
+                    self.playerLable.setText(self.curPlayer + '(' + str(self.choice) + ')')
+                    self.invalidLable.setText("")
+                    # paint the cells
+                    if buttonNum == 1:
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
+                        self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      O"))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
+                        self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(225, 225, 225))
+                    elif buttonNum == 2:
+                        self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      ●"))
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+                        self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
+                    elif buttonNum == 3:
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
+                        self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      ●"))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+                        self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(255, 0, 0))
+                    elif buttonNum == 4:
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
+                        self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      O"))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
+                        self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+                    elif buttonNum == 5:
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
+                        self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      ●"))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
+                        self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(225, 225, 225))
+                    elif buttonNum == 6:
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
+                        self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      O"))
+                        self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+                    elif buttonNum == 7:
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      ●"))
+                        self.tableWidget.setItem(self.positionY, self.positionX + 1, QTableWidgetItem("      O"))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+                        self.tableWidget.item(self.positionY, self.positionX + 1).setBackground(QtGui.QColor(255, 0, 0))
+                    elif buttonNum == 8:
+                        self.tableWidget.setItem(self.positionY - 1, self.positionX, QTableWidgetItem("      ●"))
+                        self.tableWidget.setItem(self.positionY, self.positionX, QTableWidgetItem("      O"))
+                        self.tableWidget.item(self.positionY, self.positionX).setBackground(QtGui.QColor(255, 0, 0))
+                        self.tableWidget.item(self.positionY - 1, self.positionX).setBackground(QtGui.QColor(225, 225, 225))
+                else:
+                    self.invalidLable.setText("Invalid Move")
+                if count > 24:
+                    self.phase = 'Recyle Phase'
+                    self.textLable.setText(self.phase)
+                if win_id != 0:
+                    self.textLable.setText("Game End!")
             else:
-                self.invalidLable.setText("Invalid Move")
-            if count > 24:
-                self.phase = 'Recyle Phase'
-                self.textLable.setText(self.phase)
-            if win_id != 0:
-                self.textLable.setText("Game End!")
+                self.invalidLable.setText("Invalid Player")
+
+
+    @pyqtSlot()
+    def playerChange(self):
+        if self.curPlayer == "Player 1":
+            self.curPlayer = "Player 2"
+        elif self.curPlayer == "Player 2":
+            self.curPlayer = "Player 1"
+        elif self.curPlayer == "Human Player":
+            self.curPlayer = "Computer Player"
+        elif self.curPlayer == "Computer Player":
+            self.curPlayer = "Human Player"
+        if self.choice == Choice.DOT:
+            self.choice = Choice.COLOR
+        elif self.choice == Choice.COLOR:
+            self.choice = Choice.DOT
+
 
 
 if __name__ == '__main__':
