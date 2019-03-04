@@ -8,17 +8,21 @@ import Game
 
 class State:
 
-    def __init__(self, parent, board, step, prev_card):
+    def __init__(self, parent, board, step, prev_card, orig_x=None, orig_y=None):
         """
         Ctor for State class
         :param parent: parent State, can be None for the root node
         :param board: based on which board create the board of current state
         :param step: the count of steps of the this State
         :param prev_card: the most recent card has been placed in the previous step
+        :param orig_x: x index of original card in recycling phase
+        :param orig_y: y index of original card in recycling phase
         """
         self.board = np.copy(board)
         self.step = step
         self.prev_card = prev_card
+        self.orig_x = orig_x
+        self.orig_y = orig_y
         self.parent = parent
         self.children = []
         self.highest_row = [-1] * 8
@@ -56,6 +60,7 @@ class State:
         for child in self.children:
             card = child.prev_card
             cache[card.seg[0].x][card.card_type - 1] = child
+        self.children.clear()
 
         card = None
 
@@ -94,15 +99,16 @@ class State:
                                                                                     j, old_y1, new_board,
                                                                                     self.prev_card, False)
                         if is_valid_play:
-                            state = State(self, new_board, self.step + 1, prev_card)
+                            state = State(self, new_board, self.step + 1, prev_card, j, old_y1)
                             self.children.append(state)
+
                     else:
                         s = cache[j][t - 1]
                         if isinstance(s, State):
                             new_board = np.copy(s.board)
                             for seg in card.seg:
                                 new_board[seg.y][seg.x] = 0
-                            state = State(self, new_board, s.step, s.prev_card)
+                            state = State(self, new_board, s.step, s.prev_card, old_x1, old_y1)
                             self.children.append(state)
 
     def find_highest_row(self):
@@ -132,18 +138,18 @@ class State:
 
 
 def main():
-    # print('''
-    # ===============================
-    # Regular Play: full first row
-    # ===============================
-    #         ''')
-    #
-    # game = Game(Choice.COLOR)
+    print('''
+    ===============================
+    Regular Play: full first row
+    ===============================
+            ''')
+
+    # game = Game.Game(Game.Choice.COLOR)
     # game.place_card(1, 0, 0)
     # game.place_card(1, 2, 0)
     # game.place_card(1, 4, 0)
     # is_valid, prev_card, step, win= game.place_card(1, 6, 0)
-    # Game.print_board(game.board)
+    # Game.Game.print_board(game.board)
     # state=State(None, game.board, 4, prev_card)
     # state.generate_children()
     #
@@ -247,11 +253,12 @@ def main():
     game.place_card(7, 0, 11)
     is_valid, prev_card, step, win = game.place_card(1, 2, 0)
     Game.Game.print_board(game.board)
-    state = State(None, game.board, 4, prev_card)
+    state = State(None, game.board, 24, prev_card)
     state.generate_children()
 
     for child in state.children:
         Game.Game.print_board(child.board)
+        print(str(child.orig_x)+"; "+str(child.orig_y))
 
 
 if __name__ == '__main__':
