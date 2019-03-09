@@ -14,7 +14,7 @@ from colorama import Fore, Back, Style
 import Game_Tree
 import State
 from Minimax_AlphaBeta import AlphaBeta
-
+from Mini_max import MiniMax
 class Phase(Enum):
     NORMAL = 1
     RECYCLE = 2
@@ -258,12 +258,15 @@ class Game:
         print('     ABCDEFGH')
 
 
-    def computer_move(self, choice):
+    def computer_move(self, choice, alg):
         time0 = time.time()
         node = State.State(None, self.board, self.step, self.prev_card)
         tree = Game_Tree.Game_Tree(node)
         tree.generateNLayerTree(node, 1)
-        best_Move = AlphaBeta(tree,choice).alpha_beta_search(tree.root)
+        if alg=="1":
+            best_Move = AlphaBeta(tree,choice).alpha_beta_search(tree.root)
+        elif alg=="2":
+            best_Move = MiniMax(tree, choice).minimax(tree.root)
 
         if self.step < 24:
             card_removed = None

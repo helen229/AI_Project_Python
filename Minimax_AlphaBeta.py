@@ -81,60 +81,60 @@ class AlphaBeta:
 
     def getHeuristic(self, node):
         # return node.val
-         return node.get_Heuristic()
+        return node.get_Heuristic()
 #
-# def main():
-#     root = Node(3)
-#     node11 = Node(3)
-#     node12 = Node(9)
-#     node13 = Node(0)
-#     node14 = Node(7)
-#     node15 = Node(12)
-#     node16 = Node(6)
-#
-#     node11.addChildren(Node(2))
-#     node11.addChildren(Node(3))
-#
-#     node12.addChildren(Node(5))
-#     node12.addChildren(Node(9))
-#
-#     node13.addChildren(Node(0))
-#     node13.addChildren(Node(-1))
-#
-#     node14.addChildren(Node(7))
-#     node14.addChildren(Node(4))
-#
-#     node15.addChildren(Node(2))
-#     node15.addChildren(Node(1))
-#
-#     node16.addChildren(Node(5))
-#     node16.addChildren(Node(6))
-#
-#     node21 = Node(3)
-#     node22 = Node(0)
-#     node23 = Node(22)
-#
-#     node21.addChildren(node11)
-#     node21.addChildren(node12)
-#
-#     node22.addChildren(node13)
-#     node22.addChildren(node14)
-#
-#     node23.addChildren(node15)
-#     node23.addChildren(node16)
-#
-#     root.addChildren(node21)
-#     root.addChildren(node22)
-#     root.addChildren(node23)
-#
-#     tree=Tree(root)
-#     tree.printTree(root,1)
-#     cur = "Choice.DOT"
-#     alpha = AlphaBeta(tree, cur)
-#
-#     best = alpha.alpha_beta_search(root)
-#     tree.printTree(root, 1)
-#     print(best.val)
-#
-# if __name__ == '__main__':
-#     main()
+def main():
+    root = Node(3)
+    node11 = Node(3)
+    node12 = Node(9)
+    node13 = Node(0)
+    node14 = Node(7)
+    node15 = Node(12)
+    node16 = Node(6)
+
+    node11.addChildren(Node(2))
+    node11.addChildren(Node(3))
+
+    node12.addChildren(Node(5))
+    node12.addChildren(Node(9))
+
+    node13.addChildren(Node(0))
+    node13.addChildren(Node(-1))
+
+    node14.addChildren(Node(7))
+    node14.addChildren(Node(4))
+
+    node15.addChildren(Node(2))
+    node15.addChildren(Node(1))
+
+    node16.addChildren(Node(3))
+    node16.addChildren(Node(6))
+
+    node21 = Node(3)
+    node22 = Node(0)
+    node23 = Node(22)
+
+    node21.addChildren(node11)
+    node21.addChildren(node12)
+
+    node22.addChildren(node13)
+    node22.addChildren(node14)
+
+    node23.addChildren(node15)
+    node23.addChildren(node16)
+
+    root.addChildren(node21)
+    root.addChildren(node22)
+    root.addChildren(node23)
+
+    tree=Tree(root)
+    tree.printTree(root,1)
+    cur = "Choice.DOT"
+    alpha = AlphaBeta(tree, cur)
+
+    best = alpha.alpha_beta_search(root)
+    tree.printTree(root, 1)
+    print(best.val)
+
+if __name__ == '__main__':
+    main()

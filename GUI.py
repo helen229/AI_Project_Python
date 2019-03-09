@@ -18,7 +18,7 @@ class App(QWidget):
         self.title = 'PyQt5 table'
         self.left = 0
         self.top = 0
-        self.width = 2500
+        self.width = 2700
         self.height = 2500
         self.positionY = -1
         self.positionX = -1
@@ -34,23 +34,31 @@ class App(QWidget):
         mode = input('Auto mode or Manual mode (1-Auto, 2-Manual): ')
         self.mode = mode
 
-        if mode == '1':
-            auto_input_sequence = input('Human Player: play first or second? (1-First, 2-Second): ')
-            auto_input_choice = input('Human Player: play color or dot? (1-Color, 2-Dot): ')
+        if self.mode == '1':
+            self.auto_input_alg = input('alpha-beta should be activated or not? (1-YES, 2-NO just Mini Max): ')
+            auto_input_file = input('should generate a trace of the minimax / alpha-beta or not? (1-YES, 2-NO): ')
+            auto_input_sequence = input('Computer Player: play first or second? (1-First, 2-Second): ')
+
             # auto mode
-            if auto_input_sequence == '1':
+            if auto_input_sequence == '2':
                 self.curPlayer = "Human Player"
             else:
                 self.curPlayer = "Computer Player"
 
-            if auto_input_choice == '1' and auto_input_sequence == '1':
+            auto_input_choice = input(self.curPlayer+': play color or dot? (1-Color, 2-Dot): ')
+
+            if auto_input_choice == '1':
                 self.choice = Choice.COLOR
-            elif auto_input_choice == '1' and auto_input_sequence == '2':
+            elif auto_input_choice == '2':
                 self.choice = Choice.DOT
-            elif auto_input_choice == '2' and auto_input_sequence == '1':
-                self.choice = Choice.DOT
-            elif auto_input_choice == '2' and auto_input_sequence == '2':
-                self.choice = Choice.COLOR
+            # if auto_input_choice == '1' and auto_input_sequence == '1':
+            #     self.choice = Choice.COLOR
+            # elif auto_input_choice == '2' and auto_input_sequence == '2':
+            #     self.choice = Choice.DOT
+            # elif auto_input_choice == '2' and auto_input_sequence == '1':
+            #     self.choice = Choice.DOT
+            # elif auto_input_choice == '2' and auto_input_sequence == '2':
+            #     self.choice = Choice.COLOR
 
         else:
             manual_input = input('Player 1: play color or dot? (1-Color, 2-Dot): ')
@@ -60,7 +68,6 @@ class App(QWidget):
                 self.choice = Choice.COLOR
             else:
                 self.choice = Choice.DOT
-
 
 
 
@@ -90,15 +97,25 @@ class App(QWidget):
         self.createTable()
         self.createButton()
 
+        self.editor = QtWidgets.QTextEdit()
+        self.editor.setText("hello")
+
+
         # Add box layout, add table to box layout and add box layout to widget
         self.tableLayout = QHBoxLayout()
         self.tableLayout.addWidget(self.tableWidget)
 
         self.lableLayout = QVBoxLayout()
+        self.lableLayout.addStretch(0.5)
         self.lableLayout.addWidget(self.textLable)
+        self.lableLayout.addStretch(0.7)
         self.lableLayout.addWidget(self.playerLable)
+        self.lableLayout.addStretch(0.7)
         self.lableLayout.addWidget(self.countLable)
+        self.lableLayout.addStretch(0.7)
         self.lableLayout.addWidget(self.invalidLable)
+        self.lableLayout.addStretch(0.5)
+        self.lableLayout.addWidget(self.editor)
 
         self.buttonSide1Layout = QVBoxLayout()
         self.buttonSide1Layout.addWidget(self.button1)
@@ -117,13 +134,17 @@ class App(QWidget):
         self.AnglebuttonSideLayout.addWidget(self.computerPlayerButton)
 
         self.Operationlayout = QHBoxLayout()
+        self.Operationlayout.addStretch(1)
+        self.Operationlayout.addLayout(self.lableLayout)
+        self.Operationlayout.addStretch(1)
         self.Operationlayout.addLayout(self.buttonSide1Layout)
+        self.Operationlayout.addStretch(1)
         self.Operationlayout.addLayout(self.buttonSide2Layout)
+        self.Operationlayout.addStretch(1)
         self.Operationlayout.addLayout(self.AnglebuttonSideLayout)
 
         self.layout = QHBoxLayout()
         self.layout.addLayout(self.tableLayout)
-        self.layout.addLayout(self.lableLayout)
         self.layout.addLayout(self.Operationlayout)
 
         self.setLayout(self.layout)
@@ -262,8 +283,12 @@ class App(QWidget):
             ).setBackground(QtGui.QColor(new_color1[0], new_color1[1], new_color1[2]))
         else:
             self.invalidLable.setText("Invalid Move")
-        if win_id != 0 or count == 60:
-            self.textLable.setText("Game End!")
+        if win_id == 1:
+            self.textLable.setText("Player1 Win!")
+        if win_id == 2:
+            self.textLable.setText("Player2 Win!")
+        if count == 60:
+            self.textLable.setText("Draw!")
 
 
     def recycleHelper(self, seg):
@@ -283,7 +308,7 @@ class App(QWidget):
     def computerPlayerButton_on_click(self):
         print("computer move")
         if self.curPlayer == "Computer Player":
-            card_removed, card_added, count, win_id = self.game.computer_move(str(self.choice))
+            card_removed, card_added, count, win_id = self.game.computer_move(str(self.choice),self.auto_input_alg)
 
             new_dot0, new_color0 = self.recycleHelper(card_added.seg[0])
             new_dot1, new_color1 = self.recycleHelper(card_added.seg[1])
@@ -328,8 +353,14 @@ class App(QWidget):
             self.tableWidget.item(
                 11 - card_added.seg[1].y, card_added.seg[1].x,
             ).setBackground(QtGui.QColor(new_color1[0], new_color1[1], new_color1[2]))
-            if win_id != 0 or count == 60:
-                self.textLable.setText("Game End!")
+
+            if win_id == 1:
+                self.textLable.setText("Player1 Win!")
+            if win_id == 2:
+                self.textLable.setText("Player2 Win!")
+            if count == 60:
+                self.textLable.setText("Draw!")
+
         else:
             self.invalidLable.setText("Invalid Player")
 
@@ -395,8 +426,12 @@ class App(QWidget):
                 if count > 24:
                     self.phase = 'Recyle Phase'
                     self.textLable.setText(self.phase)
-                if win_id != 0:
-                    self.textLable.setText("Game End!")
+                if win_id == 1:
+                    self.textLable.setText("Player1 Win!")
+                if win_id == 2:
+                    self.textLable.setText("Player2 Win!")
+                if count == 60:
+                    self.textLable.setText("Draw!")
             else:
                 self.invalidLable.setText("Invalid Player")
 
