@@ -272,9 +272,9 @@ class Game:
             mini = MiniMax(tree, choice)
             best_Move = mini.minimax(tree.root)
             countH = mini.countH
-        tree.printTree(node)
+        # tree.printTree(node)
         print(best_Move.val)
-        print(countH)
+        # print(countH)
         # print(len(best_Move.children))
         self.Print_File(countH,best_Move.val,node.children)
 
