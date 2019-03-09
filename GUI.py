@@ -31,12 +31,12 @@ class App(QWidget):
         self.setStyleSheet('background-color: white')
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        mode = input('Auto mode or Manual mode (1-Auto, 2-Manual): ')
-        self.mode = mode
+        # mode = input('Auto mode or Manual mode (1-Auto, 2-Manual): ')
+        self.mode = '1'
 
         if self.mode == '1':
             self.auto_input_alg = input('alpha-beta should be activated or not? (1-YES, 2-NO just Mini Max): ')
-            auto_input_file = input('should generate a trace of the minimax / alpha-beta or not? (1-YES, 2-NO): ')
+            # auto_input_file = input('should generate a trace of the minimax / alpha-beta or not? (1-YES, 2-NO): ')
             auto_input_sequence = input('Computer Player: play first or second? (1-First, 2-Second): ')
 
             # auto mode
@@ -100,7 +100,6 @@ class App(QWidget):
         self.editor = QtWidgets.QTextEdit()
         self.editor.setText("hello")
 
-
         # Add box layout, add table to box layout and add box layout to widget
         self.tableLayout = QHBoxLayout()
         self.tableLayout.addWidget(self.tableWidget)
@@ -116,6 +115,8 @@ class App(QWidget):
         self.lableLayout.addWidget(self.invalidLable)
         self.lableLayout.addStretch(0.5)
         self.lableLayout.addWidget(self.editor)
+        self.lableLayout.addStretch(0.6)
+        self.lableLayout.addWidget(self.editor_button)
 
         self.buttonSide1Layout = QVBoxLayout()
         self.buttonSide1Layout.addWidget(self.button1)
@@ -207,6 +208,12 @@ class App(QWidget):
         self.createButtonHelper(self.button7, 'Type7.png', 300, 200, 7)
         self.createButtonHelper(self.button8, 'Type8.png', 200, 200, 8)
 
+        self.editor_button = QPushButton('play', self)
+        self.editor_button.clicked.connect(self.Editor_button_on_click)
+        self.editor_button.setStyleSheet('background: transparent')
+        self.editor_button.setIcon(QtGui.QIcon('Play_image.png'))
+        self.editor_button.setIconSize(QtCore.QSize(100, 100))
+
         self.RecycleButton = QPushButton('', self)
         self.RecycleButton.isFlat()
         self.RecycleButton.setStyleSheet('background: transparent')
@@ -229,6 +236,9 @@ class App(QWidget):
         button.setIconSize(QtCore.QSize(sizeY, sizeX))
         button.clicked.connect(lambda *args: self.buttonType_on_click(number))
 
+    @pyqtSlot()  # send the input to game
+    def Editor_button_on_click(self):
+        print(self.editor.toPlainText())
 
     @pyqtSlot() #send the input to game
     def RecycleButton_on_click(self):

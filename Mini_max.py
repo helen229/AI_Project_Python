@@ -10,6 +10,7 @@ class MiniMax:
         self.currentNode = None     # GameNode
         self.successors = []        # List of GameNodes
         self.curChoice = curChoice
+        self.countH = 0
         return
 
     def minimax(self, node):
@@ -38,8 +39,9 @@ class MiniMax:
 
         successors_states = self.getSuccessors(node)
         for state in successors_states:
-            max_value = max(max_value, self.min_value(state))
-            state.val = self.min_value(state)
+            min_val = self.min_value(state)
+            max_value = max(max_value, min_val)
+            state.val = min_val
 
         return max_value
 
@@ -53,8 +55,9 @@ class MiniMax:
 
         successor_states = self.getSuccessors(node)
         for state in successor_states:
-            min_value = min(min_value, self.max_value(state))
-            state.val = self.max_value(state)
+            max_val = self.max_value(state)
+            min_value = min(min_value, max_val)
+            state.val =max_val
 
         return min_value
 
@@ -70,6 +73,7 @@ class MiniMax:
 
     def getUtility(self, node):
          # return node.val
+         self.countH += 1
          return node.get_Heuristic()
 
 # def main():

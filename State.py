@@ -26,6 +26,7 @@ class State:
         self.parent = parent
         self.children = []
         self.highest_row = [-1] * 8
+        self.val=0
 
     def generate_children(self):
         """
@@ -125,7 +126,7 @@ class State:
         for j in range(8):
             for i in range(12):
                 if isinstance(self.board[i][j], CardSegment):
-                    coordinates_Val = i * 10 + j - 1
+                    coordinates_Val = i * 10 + j + 1
                     if (self.board[i][j].color == Color.WHITE and self.board[i][j].dot == Dot.EMPTY):
                         sum += coordinates_Val
                     if (self.board[i][j].color == Color.WHITE and self.board[i][j].dot == Dot.SOLID):

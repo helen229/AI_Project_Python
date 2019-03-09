@@ -18,6 +18,7 @@ class Game_Tree:
 
     def __init__(self, root):
         self.root = root
+        # self.countH = 0
 
     def getChildrenNode(self, rootBoard):
         return rootBoard.children
@@ -59,3 +60,14 @@ class Game_Tree:
 
     def isLeaf(self, node):
         return len(node.children) == 0
+
+    def printTree(self, node):
+        curr = [node]
+        while curr:
+            next_level = []
+            for n in curr:
+                print(n.val, end=' ')
+                next_level.extend(n.children)
+            print()
+            print(len(next_level))
+            curr = next_level

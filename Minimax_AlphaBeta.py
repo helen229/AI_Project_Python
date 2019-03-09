@@ -9,6 +9,7 @@ class AlphaBeta:
         self.game_tree = game_tree  # GameTree
         self.root = game_tree.root  # GameNode
         self.curChoice = curChoice
+        self.countH = 0
 
     def alpha_beta_search(self, node):
         infinity = float('inf')
@@ -42,6 +43,8 @@ class AlphaBeta:
     def max_value(self, node, alpha, beta):
 
         if self.isLeaf(node):
+            self.countH += 1
+            # node.val = self.getHeuristic(node)
             return self.getHeuristic(node)
         infinity = float('inf')
         value = -infinity
@@ -49,6 +52,7 @@ class AlphaBeta:
         childrenNodeList = self.getChildren(node)
         for state in childrenNodeList:
             value = max(value, self.min_value(state, alpha, beta))
+            state.val = value
             alpha = max(alpha, value)
             if alpha >= beta:
                 break
@@ -57,6 +61,8 @@ class AlphaBeta:
     def min_value(self, node, alpha, beta):
 
         if self.isLeaf(node):
+            self.countH +=1
+            # node.val=self.getHeuristic(node)
             return self.getHeuristic(node)
         infinity = float('inf')
         value = infinity
@@ -64,6 +70,7 @@ class AlphaBeta:
         childrenNode = self.getChildren(node)
         for state in childrenNode:
             value = min(value, self.max_value(state, alpha, beta))
+            state.val = value
             beta = min(beta, value)
             if beta <= alpha:
                 break
@@ -128,12 +135,12 @@ def main():
     root.addChildren(node23)
 
     tree=Tree(root)
-    tree.printTree(root,1)
-    cur = "Choice.DOT"
+    tree.printTree(root)
+    cur = "Choice.COLOR"
     alpha = AlphaBeta(tree, cur)
 
     best = alpha.alpha_beta_search(root)
-    tree.printTree(root, 1)
+    tree.printTree(root)
     print(best.val)
 
 if __name__ == '__main__':

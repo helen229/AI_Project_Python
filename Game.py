@@ -263,10 +263,20 @@ class Game:
         node = State.State(None, self.board, self.step, self.prev_card)
         tree = Game_Tree.Game_Tree(node)
         tree.generateNLayerTree(node, 1)
+        countH =0
         if alg=="1":
-            best_Move = AlphaBeta(tree,choice).alpha_beta_search(tree.root)
+            alpha = AlphaBeta(tree,choice)
+            best_Move = alpha.alpha_beta_search(tree.root)
+            countH = alpha.countH
         elif alg=="2":
-            best_Move = MiniMax(tree, choice).minimax(tree.root)
+            mini = MiniMax(tree, choice)
+            best_Move = mini.minimax(tree.root)
+            countH = mini.countH
+        tree.printTree(node)
+        print(best_Move.val)
+        print(countH)
+        # print(len(best_Move.children))
+        self.Print_File(countH,best_Move.val,node.children)
 
         if self.step < 24:
             card_removed = None
@@ -289,6 +299,15 @@ class Game:
         time1 = time.time()
         print('copy copy: {:f}'.format(time1 - time0))
         return card_removed, card_added, count, win_id
+
+    def Print_File(self,count, val, list):
+        f = open("tracemm1.txt", "a+")
+        f.write(str(count)+'\n')
+        f.write(str(val)+'\r\n')
+        for i in list:
+            f.write(str(i.val)+'\n')
+        f.write('\n')
+        f.close()
 
 #
 # def main():
