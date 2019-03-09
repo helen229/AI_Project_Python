@@ -15,9 +15,9 @@ class MiniMax:
     def minimax(self, node):
         # first, find the max value
         if self.curChoice == "Choice.COLOR":
-            best_val = self.min_value(node)
-        else:
             best_val = self.max_value(node)
+        else:
+            best_val = self.min_value(node)
         successors = self.getSuccessors(node)
         # find the node with our best move
         best_move = None
