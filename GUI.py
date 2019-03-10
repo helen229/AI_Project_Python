@@ -318,7 +318,7 @@ class App(QWidget):
     def computerPlayerButton_on_click(self):
         print("computer move")
         if self.curPlayer == "Computer Player":
-            card_removed, card_added, count, win_id = self.game.computer_move(str(self.choice),self.auto_input_alg)
+            card_removed, card_added, count, win_id = self.game.computer_move(str(self.choice),self.auto_input_alg, True)
 
             new_dot0, new_color0 = self.recycleHelper(card_added.seg[0])
             new_dot1, new_color1 = self.recycleHelper(card_added.seg[1])

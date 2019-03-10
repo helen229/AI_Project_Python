@@ -260,7 +260,7 @@ class Game:
         print('     ABCDEFGH')
 
 
-    def computer_move(self, choice, alg):
+    def computer_move(self, choice, alg, is_output):
         time0 = time.time()
         node = State.State(None, self.board, self.step, self.prev_card)
         tree = Game_Tree.Game_Tree(node)
@@ -278,7 +278,8 @@ class Game:
         print(best_Move.val)
         # print(countH)
         # print(len(best_Move.children))
-        self.Print_File(countH,best_Move.val,node.children)
+        if is_output:
+            self.Print_File(countH, best_Move.val, node.children)
 
         if self.step < 24:
             card_removed = None
@@ -497,7 +498,7 @@ def console_game():
         is_valid = False
 
         if is_AI_turn:
-            card_removed, card_added, _, win_id = game.computer_move(str(choice_p[1]), is_ab)
+            card_removed, card_added, _, win_id = game.computer_move(str(choice_p[1]), is_ab, is_trace)
             if phase == Phase.REGULAR:
                 print("Computer's move:0 " + str(card_added.card_type) + " " + chr(card_added.seg[0].x+65) + " " + str(card_added.seg[0].y+1))
             else:
