@@ -305,7 +305,7 @@ class Game:
     def Print_File(self,count, val, list):
         f = open("tracemm1.txt", "a+")
         f.write(str(count)+'\n')
-        f.write(str(val)+'\r\n')
+        f.write(str(val)+'\n\n')
         for i in list:
             f.write(str(i.val)+'\n')
         f.write('\n')
