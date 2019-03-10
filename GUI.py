@@ -254,6 +254,7 @@ class App(QWidget):
         # print(is_valid, card_removed, card_added, count, win_id)
         if is_valid:
             self.invalidLable.setText("")
+            self.playerChange()
             # remove previous card
             self.tableWidget.setItem(
                 11-card_removed.seg[0].y,card_removed.seg[0].x,
