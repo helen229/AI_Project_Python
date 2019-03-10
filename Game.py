@@ -2,7 +2,7 @@
 Game class
 """
 import numpy as np
-import copy
+import re
 import time
 from enum import Enum
 from Card import Card
@@ -15,8 +15,10 @@ import Game_Tree
 import State
 from Minimax_AlphaBeta import AlphaBeta
 from Mini_max import MiniMax
+
+
 class Phase(Enum):
-    NORMAL = 1
+    REGULAR = 1
     RECYCLE = 2
 
 
@@ -297,7 +299,7 @@ class Game:
                                                          best_Move.prev_card.seg[0].y,
                                                          )
         time1 = time.time()
-        print('copy copy: {:f}'.format(time1 - time0))
+        print('Time: {:f}'.format(time1 - time0))
         return card_removed, card_added, count, win_id
 
     def Print_File(self,count, val, list):
@@ -407,5 +409,138 @@ class Game:
     # print('deep copy: {:f}'.format(time1 - time0))
 
 
-# if __name__ == '__main__':
-#     main()
+def console_game():
+    is_AI_mode = True
+    is_ab = 1
+    is_trace = True
+    player_AI = 1
+    choice_p = [None, Choice.COLOR, Choice.DOT]
+
+    # mode
+    while True:
+        user_input = input('Game Mode (1-AI, 2-Manual): ')
+        choice = re.match('^([1-2])$', user_input)
+        if choice:
+            if int(choice.group(1)) == 1:
+                is_AI_mode = True
+            else:
+                is_AI_mode = False
+            break
+
+        print('Invalid input, please try again')
+
+    if is_AI_mode:
+        # player
+        while True:
+            user_input = input('Which player is AI player? : ')
+            choice = re.match('^([1-2])$', user_input)
+            if choice:
+                player_AI = int(choice.group(1))
+                break
+
+            print('Invalid input, please try again')
+
+        # switch for alpha-beta
+        while True:
+            user_input = input('Use alpha-beta? (1-Yes, 2-No): ')
+            choice = re.match('^([1-2])$', user_input)
+            if choice:
+                is_ab = choice.group(1)
+                break
+
+            print('Invalid input, please try again')
+
+        # switch for trace
+        while True:
+            user_input = input('Output to trace file? (1-Yes, 2-No): ')
+            choice = re.match('^([1-2])$', user_input)
+            if choice:
+                if int(choice.group(1)) == 1:
+                    is_trace = True
+                else:
+                    is_trace = False
+                break
+
+            print('Invalid input, please try again')
+
+    # p1 color or dot
+    while True:
+        user_input = input('Choice of Player 1 (1-Color, 2-Dot): ')
+        choice = re.match('^([1-2])$', user_input)
+        if choice:
+            if int(choice.group(1)) == 1:
+                choice_p[1] = Choice.COLOR
+                choice_p[2] = Choice.DOT
+            else:
+                choice_p[1] = Choice.DOT
+                choice_p[2] = Choice.COLOR
+            break
+
+        print('Invalid input, please try again')
+
+    game = Game(choice_p[1])
+
+    phase = Phase.REGULAR
+    step = 1
+    pattern = [re.compile('^(0)\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$'),
+               re.compile(
+                   '^([A-H])\\s([1-9]|1[0-2])\\s([A-H])\\s([1-9]|1[0-2])\\s([1-8])\\s([A-H])\\s([1-9]|1[0-2])$')]
+
+    show_board = True
+    is_AI_turn = False
+
+    if player_AI == 1:
+        is_AI_turn = True
+
+    while True:
+        param = None
+        is_valid = False
+
+        if is_AI_turn:
+            card_removed, card_added, _, win_id = game.computer_move(str(choice_p[1]), is_ab)
+            if phase == Phase.REGULAR:
+                print("Computer's move:0 " + str(card_added.card_type) + " " + chr(card_added.seg[0].x+65) + " " + str(card_added.seg[0].y+1))
+            else:
+                print("Computer's move:" + chr(card_removed.seg[0].x+65) + " " + str(card_removed.seg[0].y+1) + " " + chr(card_removed.seg[1].x+65) + " " + str(card_removed.seg[1].y+1) + " " + str(card_added.card_type) + " " + chr(card_added.seg[0].x+65) + " " + str(card_added.seg[0].y+1))
+        else:
+            while (not param) or (not is_valid):
+                player = ((step - 1) % 2 + 1)
+                user_input = input('Player ' + str(player) + ' [' + phase.name + ']: ')
+                param = pattern[phase.value - 1].match(user_input)
+                if not param:
+                    if user_input == 'p':
+                        show_board = not show_board
+                        print('Show board: '+str(show_board))
+                        game.print_board(game.board)
+                    else:
+                        print('Invalid input, please try again')
+                    continue
+                if phase == Phase.REGULAR:
+                    is_valid, _, _, win_id = game.place_card(int(param.group(2)), ord(param.group(3)) - 65, int(param.group(4)) - 1)
+                else:
+                    is_valid, _, _, _, win_id = game.recycle_card(ord(param.group(1)) - 65, int(param.group(2)) - 1, ord(param.group(3)) - 65, int(param.group(4)) - 1, int(param.group(5)), ord(param.group(6)) - 65, int(param.group(7)) - 1)
+
+                if not is_valid:
+                    print('Invalid move, please try again')
+
+        if show_board:
+            game.print_board(game.board)
+
+        if win_id != 0:
+            print('Player ' + str(win_id) + ' wins!')
+            exit()
+
+        if step == 60:
+            print('Game ends in a draw')
+            exit()
+        if step == 24:
+            print('Recycling phase starts')
+            phase = Phase.RECYCLE
+        if is_AI_mode:
+            is_AI_turn = not is_AI_turn
+
+        step += 1
+
+
+if __name__ == '__main__':
+    console_game()

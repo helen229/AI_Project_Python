@@ -139,11 +139,11 @@ class State:
 
 
 def main():
-    print('''
-    ===============================
-    Regular Play: full first row
-    ===============================
-            ''')
+    # print('''
+    # ===============================
+    # Regular Play: full first row
+    # ===============================
+    #         ''')
 
     # game = Game.Game(Game.Choice.COLOR)
     # game.place_card(1, 0, 0)
@@ -233,33 +233,57 @@ def main():
     # # for child in state.children:
     # #     Game.Game.print_board(child.board)
 
+    # print('''
+    # ===============================
+    # Recycle Play: full column
+    # ===============================
+    #         ''')
+    #
+    # game = Game.Game(Game.Choice.COLOR)
+    # game.place_card(1, 0, 0)
+    # game.place_card(3, 0, 1)
+    # game.place_card(5, 0, 2)
+    # game.place_card(7, 0, 3)
+    # game.place_card(1, 0, 4)
+    # game.place_card(3, 0, 5)
+    # game.place_card(5, 0, 6)
+    # game.place_card(7, 0, 7)
+    # game.place_card(1, 0, 8)
+    # game.place_card(3, 0, 9)
+    # game.place_card(5, 0, 10)
+    # game.place_card(7, 0, 11)
+    # is_valid, prev_card, step, win = game.place_card(1, 2, 0)
+    # Game.Game.print_board(game.board)
+    # state = State(None, game.board, 24, prev_card)
+    # state.generate_children()
+    #
+    # for child in state.children:
+    #     Game.Game.print_board(child.board)
+    #     print(str(child.orig_x)+"; "+str(child.orig_y))
+
     print('''
     ===============================
-    Recycle Play: full column
+    Regular Play: Heuristic
     ===============================
             ''')
 
     game = Game.Game(Game.Choice.COLOR)
-    game.place_card(1, 0, 0)
-    game.place_card(3, 0, 1)
-    game.place_card(5, 0, 2)
-    game.place_card(7, 0, 3)
-    game.place_card(1, 0, 4)
-    game.place_card(3, 0, 5)
-    game.place_card(5, 0, 6)
-    game.place_card(7, 0, 7)
-    game.place_card(1, 0, 8)
-    game.place_card(3, 0, 9)
-    game.place_card(5, 0, 10)
-    game.place_card(7, 0, 11)
-    is_valid, prev_card, step, win = game.place_card(1, 2, 0)
-    Game.Game.print_board(game.board)
-    state = State(None, game.board, 24, prev_card)
-    state.generate_children()
+    game.place_card(3, 0, 0)
+    game.place_card(8, 2, 0)
+    game.place_card(8, 3, 0)
+    game.place_card(3, 4, 0)
+    game.place_card(3, 4, 1)
+    # game.place_card(1, 4, 1)
+    game.place_card(5, 0, 1)
+    game.place_card(4, 2, 2)
+    game.place_card(4, 3, 2)
 
-    for child in state.children:
-        Game.Game.print_board(child.board)
-        print(str(child.orig_x)+"; "+str(child.orig_y))
+    is_valid, prev_card, step, win = game.place_card(1, 4, 2)
+    # is_valid, prev_card, step, win = game.place_card(2, 0, 2)
+    Game.Game.print_board(game.board)
+    state = State(None, game.board, 9, prev_card)
+
+    print(str(state.get_Heuristic()))
 
 
 if __name__ == '__main__':
